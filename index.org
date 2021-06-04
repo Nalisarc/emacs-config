@@ -57,7 +57,7 @@
   :END:
 
 #+BEGIN_SRC elisp
-  (require org-protocol)
+  (require 'org-protocol)
 #+END_SRC
 
 ** TODO Roam
@@ -156,6 +156,26 @@
 
 #+END_SRC
 
+* TODO Theme
+#+name: theme
+#+BEGIN_SRC elisp
+  (straight-use-package 'weyland-yutani-theme)
+  (load-theme `weyland-yutani t)
+#+END_SRC
+
+* TODO Pdf Tools
+#+name: pdf-tools
+#+BEGIN_SRC elisp
+  (straight-use-package 'pdf-tools)
+  (pdf-tools-install)
+#+END_SRC
+
+* TODO Magit
+#+name: magit
+#+BEGIN_SRC elisp
+  (straight-use-package 'magit)
+#+END_SRC
+
 * main
 
 #+name: early-init.el 
@@ -178,4 +198,10 @@
   <<custom-file>>
 
   <<yasnippet>>
+
+  <<theme>>
+
+  <<pdf-tools>>
+
+  <<magit>>
 #+END_SRC
