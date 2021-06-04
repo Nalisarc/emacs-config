@@ -57,6 +57,7 @@
   :END:
 
 #+BEGIN_SRC elisp
+  (straight-use-package 'org)
   (require 'org-protocol)
 #+END_SRC
 

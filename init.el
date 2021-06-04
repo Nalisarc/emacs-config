@@ -33,6 +33,7 @@
       bibtex-completion-library-path "~/Dropbox/bibliography/bibtex-pdfs"
       bibtex-completion-notes-path "~/Dropbox/bibliography/bibtex-notes")
 
+(straight-use-package 'org)
 (require 'org-protocol)
 (straight-use-package 'org-roam)
 (require 'org-roam-protocol)
