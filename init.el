@@ -88,6 +88,17 @@
 	org-roam-server-network-label-wrap-length 20)
 
 (org-roam-server-mode)
+(straight-use-package 'ob-ipython)
+(straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((shell . t)
+   (latex . t)
+   (python . t)
+   (ipython . t)
+   (scad . t)
+   ))
 
 (menu-bar-mode -1)
 (tool-bar-mode -1) 
@@ -133,4 +144,5 @@
       ispell-extra-args '("--sug-mode=ultra"))
 
 (straight-use-package 'flycheck)
+(straight-use-package 'flycheck-rust)
 (add-hook 'after-init-hook #'global-flycheck-mode)

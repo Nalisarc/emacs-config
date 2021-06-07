@@ -1,6 +1,6 @@
 #+title: Emacs Customization and Setup
 
-* DONE Straight
+* Straight
   :PROPERTIES:
   :header-args: :noweb-ref straight
   :END:
@@ -19,7 +19,7 @@
     (load bootstrap-file nil 'nomessage))
 #+END_SRC
 
-* TODO Helm
+* Helm
   :PROPERTIES:
   :header-args: :noweb-ref helm
   :END:
@@ -41,7 +41,7 @@
   (global-set-key (kbd "C-c h o") 'helm-occur)
 #+END_SRC
 
-* TODO Helm Bibtex
+* Helm Bibtex
 #+name: helm-bibtex
 #+BEGIN_SRC elisp
   (straight-use-package 'helm-bibtex)
@@ -51,7 +51,7 @@
 	bibtex-completion-notes-path "~/Dropbox/bibliography/bibtex-notes")
 #+END_SRC
 
-* TODO Org
+* Org
   :PROPERTIES:
   :header-args: :noweb-ref org
   :END:
@@ -142,7 +142,22 @@
   (org-roam-server-mode)
 #+END_SRC
 
-* TODO Yasnippet
+** TODO ob-ipython
+#+begin_src elisp
+  (straight-use-package 'ob-ipython)
+  (straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
+  
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((shell . t)
+     (latex . t)
+     (python . t)
+     (ipython . t)
+     (scad . t)
+     ))
+#+end_src
+
+* Yasnippet
   :PROPERTIES:
   :header-args: :noweb-ref yasnippet
   :END:
@@ -154,7 +169,7 @@
   (yas-global-mode 1)
 #+END_SRC
 
-* DONE Disable Toolbar
+* Disable Toolbar
 #+name: disable-toolbar
 #+BEGIN_SRC elisp
   (menu-bar-mode -1)
@@ -162,7 +177,7 @@
   (toggle-scroll-bar -1) 
 #+END_SRC
 
-* DONE Custom File
+* Custom File
 
 #+name: custom-file
 #+BEGIN_SRC elisp
@@ -175,33 +190,33 @@
 
 #+END_SRC
 
-* TODO Theme
+* Theme
 #+name: theme
 #+BEGIN_SRC elisp
   (straight-use-package 'weyland-yutani-theme)
   (load-theme `weyland-yutani t)
 #+END_SRC
 
-* TODO Pdf Tools
+* Pdf Tools
 #+name: pdf-tools
 #+BEGIN_SRC elisp
   (straight-use-package 'pdf-tools)
   (pdf-tools-install)
 #+END_SRC
 
-* TODO Magit
+* Magit
 #+name: magit
 #+BEGIN_SRC elisp
   (straight-use-package 'magit)
 #+END_SRC
 
-* DONE Allow y/n instead of yes/no
+* Allow y/n instead of yes/no
 #+name: y-n-p
 #+begin_src elisp
     (defalias 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
-* TODO Crux
+* Crux
 :PROPERTIES:
 :header-args: :noweb-ref crux
 :END:
@@ -211,7 +226,7 @@ Crux is the helpful functions from prelude, without needing to use prelude
   (straight-use-package 'crux)
 #+end_src
 
-* TODO Super Save
+* Super Save
 :PROPERTIES:
 :header-args: :noweb-ref super-save
 :END:
@@ -249,8 +264,10 @@ Better save utility from prelude without prelude
 
 #+begin_src elisp
   (straight-use-package 'flycheck)
+  (straight-use-package 'flycheck-rust)
   (add-hook 'after-init-hook #'global-flycheck-mode)
 #+end_src
+
 
 * main
   
@@ -291,3 +308,4 @@ Better save utility from prelude without prelude
   
   <<flycheck>>
 #+END_SRC
+c
