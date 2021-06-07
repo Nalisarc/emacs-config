@@ -195,6 +195,63 @@
   (straight-use-package 'magit)
 #+END_SRC
 
+* DONE Allow y/n instead of yes/no
+#+name: y-n-p
+#+begin_src elisp
+    (defalias 'yes-or-no-p 'y-or-n-p)
+#+end_src
+
+* TODO Crux
+:PROPERTIES:
+:header-args: :noweb-ref crux
+:END:
+
+Crux is the helpful functions from prelude, without needing to use prelude
+#+begin_src elisp
+  (straight-use-package 'crux)
+#+end_src
+
+* TODO Super Save
+:PROPERTIES:
+:header-args: :noweb-ref super-save
+:END:
+
+Better save utility from prelude without prelude
+#+begin_src elisp
+  (straight-use-package 'super-save)
+  
+  (super-save-mode +1)
+  
+  (setq auto-save-default nil)
+  
+  (setq super-save-exclude '(".gpg"))
+  
+  (setq super-save-remote-files nil)
+  
+  (add-to-list 'super-save-hook-triggers 'find-file-hook)
+#+end_src
+
+* Flyspell
+:PROPERTIES:
+:header-args: :noweb-ref flyspell
+:END:
+
+#+begin_src elisp
+  (require 'flyspell)
+  (setq ispell-program-name "aspell" ; use aspell instead of ispell
+	ispell-extra-args '("--sug-mode=ultra"))
+#+end_src
+
+* Flycheck
+:PROPERTIES:
+:header-args: :noweb-ref flycheck
+:END:
+
+#+begin_src elisp
+  (straight-use-package 'flycheck)
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+#+end_src
+
 * main
   
 #+name: early-init.el 
@@ -205,22 +262,32 @@
 #+name: init.el
 #+BEGIN_SRC elisp :tangle init.el :noweb yes
   <<straight>>
-
+  
+  <<y-n-p>>
+  
   <<helm>>
-
+  
   <<helm-bibtex>>
-
+  
   <<org>>
-
+  
   <<disable-toolbar>>
-
+  
   <<custom-file>>
-
+  
   <<yasnippet>>
-
+  
   <<theme>>
-
+  
   <<pdf-tools>>
-
+  
   <<magit>>
+  
+  <<crux>>
+  
+  <<super-save>>
+  
+  <<flyspell>>
+  
+  <<flycheck>>
 #+END_SRC

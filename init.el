@@ -11,6 +11,8 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 (straight-use-package 'helm)
 (helm-mode 1)
 (global-set-key (kbd "C-c h") 'helm-command-prefix)
@@ -111,3 +113,24 @@
 (pdf-tools-install)
 
 (straight-use-package 'magit)
+
+(straight-use-package 'crux)
+
+(straight-use-package 'super-save)
+
+(super-save-mode +1)
+
+(setq auto-save-default nil)
+
+(setq super-save-exclude '(".gpg"))
+
+(setq super-save-remote-files nil)
+
+(add-to-list 'super-save-hook-triggers 'find-file-hook)
+
+(require 'flyspell)
+(setq ispell-program-name "aspell" ; use aspell instead of ispell
+      ispell-extra-args '("--sug-mode=ultra"))
+
+(straight-use-package 'flycheck)
+(add-hook 'after-init-hook #'global-flycheck-mode)
