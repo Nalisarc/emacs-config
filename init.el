@@ -73,13 +73,14 @@
 (setq bibtex-completion-pdf-open-function 'org-open-file)
 (straight-use-package 'org-noter)
 (straight-use-package 'hydra)
+
 (straight-use-package
  '(org-fc
    :type git :repo "https://git.sr.ht/~l3kn/org-fc"
    :files (:defaults "awk" "demo.org")
-   :custom (org-fc-directories '("~/org/"))
-   :config
-   (require 'org-fc-hydra)))
+   :custom (org-fc-directories '("~/org/"))))
+
+(require 'org-fc-hydra)
 (straight-use-package 'org-roam-bibtex)
 (add-hook 'org-roam-mode-hook #'org-roam-bibtex-mode)
 (straight-use-package 'org-download)

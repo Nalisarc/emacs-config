@@ -119,14 +119,15 @@
 
 ** TODO Flash Cards
 #+BEGIN_SRC emacs-lisp
-(straight-use-package 'hydra)
-(straight-use-package
- '(org-fc
-   :type git :repo "https://git.sr.ht/~l3kn/org-fc"
-   :files (:defaults "awk" "demo.org")
-   :custom (org-fc-directories '("~/org/"))
-   :config
-   (require 'org-fc-hydra)))
+  (straight-use-package 'hydra)
+  
+  (straight-use-package
+   '(org-fc
+     :type git :repo "https://git.sr.ht/~l3kn/org-fc"
+     :files (:defaults "awk" "demo.org")
+     :custom (org-fc-directories '("~/org/"))))
+  
+  (require 'org-fc-hydra)
 #+END_SRC
 
 ** TODO roam-bibtex
