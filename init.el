@@ -37,6 +37,9 @@
 
 (straight-use-package 'org)
 (require 'org-protocol)
+
+(setq indent-tabs-mode nil)
+(setq org-src-preserve-indentation nil)
 (straight-use-package 'org-roam)
 (require 'org-roam-protocol)
 
@@ -76,21 +79,21 @@
 (add-hook 'dired-mode-hook 'org-download-enable)
 (straight-use-package 'org-roam-server)
 (setq org-roam-server-host "127.0.0.1"
-	org-roam-server-port 8080
-	org-roam-server-authenticate nil
-	org-roam-server-export-inline-images t
-	org-roam-server-serve-files nil
-	org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
-	org-roam-server-network-poll t
-	org-roam-server-network-arrows nil
-	org-roam-server-network-label-truncate t
-	org-roam-server-network-label-truncate-length 60
-	org-roam-server-network-label-wrap-length 20)
+      org-roam-server-port 8080
+      org-roam-server-authenticate nil
+      org-roam-server-export-inline-images t
+      org-roam-server-serve-files nil
+      org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
+      org-roam-server-network-poll t
+      org-roam-server-network-arrows nil
+      org-roam-server-network-label-truncate t
+      org-roam-server-network-label-truncate-length 60
+      org-roam-server-network-label-wrap-length 20)
 
 (org-roam-server-mode)
 (straight-use-package 'ob-ipython)
 (straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
-
+  
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((shell . t)
@@ -128,15 +131,15 @@
 (straight-use-package 'crux)
 
 (straight-use-package 'super-save)
-
+  
 (super-save-mode +1)
-
+  
 (setq auto-save-default nil)
-
+  
 (setq super-save-exclude '(".gpg"))
-
+  
 (setq super-save-remote-files nil)
-
+  
 (add-to-list 'super-save-hook-triggers 'find-file-hook)
 
 (require 'flyspell)
@@ -146,3 +149,6 @@
 (straight-use-package 'flycheck)
 (straight-use-package 'flycheck-rust)
 (add-hook 'after-init-hook #'global-flycheck-mode)
+
+(straight-use-package 'company)
+(add-hook 'after-init-hook 'global-company-mode)

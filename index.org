@@ -57,104 +57,108 @@
   :END:
 
 #+BEGIN_SRC elisp
-  (straight-use-package 'org)
-  (require 'org-protocol)
+(straight-use-package 'org)
+(require 'org-protocol)
+
+(setq indent-tabs-mode nil)
+(setq org-src-preserve-indentation nil)
 #+END_SRC
+
 
 ** TODO Roam
 #+BEGIN_SRC elisp
-  (straight-use-package 'org-roam)
-  (require 'org-roam-protocol)
+(straight-use-package 'org-roam)
+(require 'org-roam-protocol)
 
-  (unless (executable-find "sqlite3")
-    (add-to-list 'exec-path "path/to/sqlite3") ; TODO REPLACE WITH VARIABLES
-    )
+(unless (executable-find "sqlite3")
+  (add-to-list 'exec-path "path/to/sqlite3") ; TODO REPLACE WITH VARIABLES
+  )
 
-  (setq org-roam-directory "~/org-roam") ; TODO REPLACE WITH VARIABLE
-  (unless (file-directory-p org-roam-directory)
-    (make-directory org-roam-directory)
-    )
+(setq org-roam-directory "~/org-roam") ; TODO REPLACE WITH VARIABLE
+(unless (file-directory-p org-roam-directory)
+  (make-directory org-roam-directory)
+  )
 
 
-  (add-hook 'after-init-hook 'org-roam-mode)
+(add-hook 'after-init-hook 'org-roam-mode)
 #+END_SRC
 
 ** TODO Ref
 #+BEGIN_SRC elisp
-  (straight-use-package 'org-ref)
-  (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
+(straight-use-package 'org-ref)
+(setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
 
-  (setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib"))
+(setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib"))
 
-  (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
-	org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
-	org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/")
+(setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
+      org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
+      org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/")
 
-  (setq bibtex-completion-pdf-open-function 'org-open-file)
+(setq bibtex-completion-pdf-open-function 'org-open-file)
 #+END_SRC
 
 ** TODO Noter
 #+BEGIN_SRC elisp
-  (straight-use-package 'org-noter)
+(straight-use-package 'org-noter)
 #+END_SRC
 
 ** TODO Capture
 
 ** TODO Flash Cards
 #+BEGIN_SRC emacs-lisp
-  (straight-use-package 'hydra)
-  (straight-use-package
-   '(org-fc
-     :type git :repo "https://git.sr.ht/~l3kn/org-fc"
-     :files (:defaults "awk" "demo.org")
-     :custom (org-fc-directories '("~/org/"))
-     :config
-     (require 'org-fc-hydra)))
+(straight-use-package 'hydra)
+(straight-use-package
+ '(org-fc
+   :type git :repo "https://git.sr.ht/~l3kn/org-fc"
+   :files (:defaults "awk" "demo.org")
+   :custom (org-fc-directories '("~/org/"))
+   :config
+   (require 'org-fc-hydra)))
 #+END_SRC
 
 ** TODO roam-bibtex
 #+BEGIN_SRC elisp
-  (straight-use-package 'org-roam-bibtex)
-  (add-hook 'org-roam-mode-hook #'org-roam-bibtex-mode)
+(straight-use-package 'org-roam-bibtex)
+(add-hook 'org-roam-mode-hook #'org-roam-bibtex-mode)
 #+END_SRC
 
 ** TODO Org-Download
 #+BEGIN_SRC emacs-lisp
-  (straight-use-package 'org-download)
-  (add-hook 'dired-mode-hook 'org-download-enable)
+(straight-use-package 'org-download)
+(add-hook 'dired-mode-hook 'org-download-enable)
 #+END_SRC
 
 ** TODO Org-Roam-Server
 #+BEGIN_SRC elisp
-  (straight-use-package 'org-roam-server)
-  (setq org-roam-server-host "127.0.0.1"
-	  org-roam-server-port 8080
-	  org-roam-server-authenticate nil
-	  org-roam-server-export-inline-images t
-	  org-roam-server-serve-files nil
-	  org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
-	  org-roam-server-network-poll t
-	  org-roam-server-network-arrows nil
-	  org-roam-server-network-label-truncate t
-	  org-roam-server-network-label-truncate-length 60
-	  org-roam-server-network-label-wrap-length 20)
+(straight-use-package 'org-roam-server)
+(setq org-roam-server-host "127.0.0.1"
+      org-roam-server-port 8080
+      org-roam-server-authenticate nil
+      org-roam-server-export-inline-images t
+      org-roam-server-serve-files nil
+      org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
+      org-roam-server-network-poll t
+      org-roam-server-network-arrows nil
+      org-roam-server-network-label-truncate t
+      org-roam-server-network-label-truncate-length 60
+      org-roam-server-network-label-wrap-length 20)
 
-  (org-roam-server-mode)
+(org-roam-server-mode)
 #+END_SRC
 
 ** TODO ob-ipython
 #+begin_src elisp
-  (straight-use-package 'ob-ipython)
-  (straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
+(straight-use-package 'ob-ipython)
+(straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
   
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((shell . t)
-     (latex . t)
-     (python . t)
-     (ipython . t)
-     (scad . t)
-     ))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((shell . t)
+   (latex . t)
+   (python . t)
+   (ipython . t)
+   (scad . t)
+   ))
 #+end_src
 
 * Yasnippet
@@ -163,57 +167,57 @@
   :END:
 
 #+BEGIN_SRC elisp
-  (straight-use-package 'yasnippet)
-  (straight-use-package 'yasnippet-snippets)
+(straight-use-package 'yasnippet)
+(straight-use-package 'yasnippet-snippets)
 
-  (yas-global-mode 1)
+(yas-global-mode 1)
 #+END_SRC
 
 * Disable Toolbar
 #+name: disable-toolbar
 #+BEGIN_SRC elisp
-  (menu-bar-mode -1)
-  (tool-bar-mode -1) 
-  (toggle-scroll-bar -1) 
+(menu-bar-mode -1)
+(tool-bar-mode -1) 
+(toggle-scroll-bar -1) 
 #+END_SRC
 
 * Custom File
 
 #+name: custom-file
 #+BEGIN_SRC elisp
-  ;; https://stackoverflow.com/questions/14071991/how-to-create-an-empty-file-by-elisp
-  (defconst custom-file (expand-file-name "custom.el" user-emacs-directory))
-  (unless (file-exists-p custom-file)
-    (write-region "" nil custom-file))
+;; https://stackoverflow.com/questions/14071991/how-to-create-an-empty-file-by-elisp
+(defconst custom-file (expand-file-name "custom.el" user-emacs-directory))
+(unless (file-exists-p custom-file)
+  (write-region "" nil custom-file))
 
-  (load-file custom-file)
+(load-file custom-file)
 
 #+END_SRC
 
 * Theme
 #+name: theme
 #+BEGIN_SRC elisp
-  (straight-use-package 'weyland-yutani-theme)
-  (load-theme `weyland-yutani t)
+(straight-use-package 'weyland-yutani-theme)
+(load-theme `weyland-yutani t)
 #+END_SRC
 
 * Pdf Tools
 #+name: pdf-tools
 #+BEGIN_SRC elisp
-  (straight-use-package 'pdf-tools)
-  (pdf-tools-install)
+(straight-use-package 'pdf-tools)
+(pdf-tools-install)
 #+END_SRC
 
 * Magit
 #+name: magit
 #+BEGIN_SRC elisp
-  (straight-use-package 'magit)
+(straight-use-package 'magit)
 #+END_SRC
 
 * Allow y/n instead of yes/no
 #+name: y-n-p
 #+begin_src elisp
-    (defalias 'yes-or-no-p 'y-or-n-p)
+(defalias 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
 * Crux
@@ -223,7 +227,7 @@
 
 Crux is the helpful functions from prelude, without needing to use prelude
 #+begin_src elisp
-  (straight-use-package 'crux)
+(straight-use-package 'crux)
 #+end_src
 
 * Super Save
@@ -233,17 +237,17 @@ Crux is the helpful functions from prelude, without needing to use prelude
 
 Better save utility from prelude without prelude
 #+begin_src elisp
-  (straight-use-package 'super-save)
+(straight-use-package 'super-save)
   
-  (super-save-mode +1)
+(super-save-mode +1)
   
-  (setq auto-save-default nil)
+(setq auto-save-default nil)
   
-  (setq super-save-exclude '(".gpg"))
+(setq super-save-exclude '(".gpg"))
   
-  (setq super-save-remote-files nil)
+(setq super-save-remote-files nil)
   
-  (add-to-list 'super-save-hook-triggers 'find-file-hook)
+(add-to-list 'super-save-hook-triggers 'find-file-hook)
 #+end_src
 
 * Flyspell
@@ -252,9 +256,9 @@ Better save utility from prelude without prelude
 :END:
 
 #+begin_src elisp
-  (require 'flyspell)
-  (setq ispell-program-name "aspell" ; use aspell instead of ispell
-	ispell-extra-args '("--sug-mode=ultra"))
+(require 'flyspell)
+(setq ispell-program-name "aspell" ; use aspell instead of ispell
+      ispell-extra-args '("--sug-mode=ultra"))
 #+end_src
 
 * Flycheck
@@ -263,49 +267,61 @@ Better save utility from prelude without prelude
 :END:
 
 #+begin_src elisp
-  (straight-use-package 'flycheck)
-  (straight-use-package 'flycheck-rust)
-  (add-hook 'after-init-hook #'global-flycheck-mode)
+(straight-use-package 'flycheck)
+(straight-use-package 'flycheck-rust)
+(add-hook 'after-init-hook #'global-flycheck-mode)
+#+end_src
+
+* Company
+:PROPERTIES:
+:header-args: :noweb-ref company
+:END:
+
+#+begin_src emacs-lisp
+(straight-use-package 'company)
+(add-hook 'after-init-hook 'global-company-mode)
 #+end_src
 
 
-* main
+* Main
   
 #+name: early-init.el 
 #+BEGIN_SRC elisp :tangle early-init.el :noweb yes 
-  (setq package-enable-at-startup nil)
+(setq package-enable-at-startup nil)
 #+END_SRC
 
 #+name: init.el
 #+BEGIN_SRC elisp :tangle init.el :noweb yes
-  <<straight>>
-  
-  <<y-n-p>>
-  
-  <<helm>>
-  
-  <<helm-bibtex>>
-  
-  <<org>>
-  
-  <<disable-toolbar>>
-  
-  <<custom-file>>
-  
-  <<yasnippet>>
-  
-  <<theme>>
-  
-  <<pdf-tools>>
-  
-  <<magit>>
-  
-  <<crux>>
-  
-  <<super-save>>
-  
-  <<flyspell>>
-  
-  <<flycheck>>
+<<straight>>
+
+<<y-n-p>>
+
+<<helm>>
+
+<<helm-bibtex>>
+
+<<org>>
+
+<<disable-toolbar>>
+
+<<custom-file>>
+
+<<yasnippet>>
+
+<<theme>>
+
+<<pdf-tools>>
+
+<<magit>>
+
+<<crux>>
+
+<<super-save>>
+
+<<flyspell>>
+
+<<flycheck>>
+
+<<company>>
 #+END_SRC
-c
+
