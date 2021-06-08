@@ -54,6 +54,13 @@
 
 
 (add-hook 'after-init-hook 'org-roam-mode)
+
+(global-set-key (kbd "C-c n") 'org-roam-mode-map)
+(define-key org-roam-mode-map (kbd "C-c n l") 'org-roam)
+(define-key org-roam-mode-map (kbd "C-c n f") 'org-roam-find-file)
+(define-key org-roam-mode-map (kbd "C-c n g") 'org-roam-graph)
+(define-key org-mode-map (kbd "C-c n i") 'org-roam-insert)
+(define-key org-mode-map (kbd "C-c n I") 'org-roam-insert-immediate)
 (straight-use-package 'org-ref)
 (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
 

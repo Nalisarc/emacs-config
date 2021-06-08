@@ -1,4 +1,7 @@
-#+title: Emacs Customization and Setup
+#+Title: Emacs Customization and Setup
+#+Author: Δelta A Bates-Smith
+#+Email: nalisarc@gmail.com
+#+STARTUP: overview
 
 * Straight
   :PROPERTIES:
@@ -67,21 +70,31 @@
 
 ** TODO Roam
 #+BEGIN_SRC elisp
-(straight-use-package 'org-roam)
-(require 'org-roam-protocol)
-
-(unless (executable-find "sqlite3")
-  (add-to-list 'exec-path "path/to/sqlite3") ; TODO REPLACE WITH VARIABLES
-  )
-
-(setq org-roam-directory "~/org-roam") ; TODO REPLACE WITH VARIABLE
-(unless (file-directory-p org-roam-directory)
-  (make-directory org-roam-directory)
-  )
-
-
-(add-hook 'after-init-hook 'org-roam-mode)
+  (straight-use-package 'org-roam)
+  (require 'org-roam-protocol)
+  
+  (unless (executable-find "sqlite3")
+    (add-to-list 'exec-path "path/to/sqlite3") ; TODO REPLACE WITH VARIABLES
+    )
+  
+  (setq org-roam-directory "~/org-roam") ; TODO REPLACE WITH VARIABLE
+  (unless (file-directory-p org-roam-directory)
+    (make-directory org-roam-directory)
+    )
+  
+  
+  (add-hook 'after-init-hook 'org-roam-mode)
+  
+  (global-set-key (kbd "C-c n") 'org-roam-mode-map)
+  (define-key org-roam-mode-map (kbd "C-c n l") 'org-roam)
+  (define-key org-roam-mode-map (kbd "C-c n f") 'org-roam-find-file)
+  (define-key org-roam-mode-map (kbd "C-c n g") 'org-roam-graph)
+  (define-key org-mode-map (kbd "C-c n i") 'org-roam-insert)
+  (define-key org-mode-map (kbd "C-c n I") 'org-roam-insert-immediate)
 #+END_SRC
+
+#+RESULTS:
+: org-roam-insert-immediate
 
 ** TODO Ref
 #+BEGIN_SRC elisp
@@ -324,4 +337,5 @@ Better save utility from prelude without prelude
 
 <<company>>
 #+END_SRC
+
 
