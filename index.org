@@ -241,7 +241,10 @@ t
 
 Crux is the helpful functions from prelude, without needing to use prelude
 #+begin_src elisp
-(straight-use-package 'crux)
+  (straight-use-package 'crux)
+  
+  (crux-with-region-or-buffer indent-region)
+  (crux-with-region-or-buffer untabify)
 #+end_src
 
 * Super Save
@@ -306,6 +309,7 @@ Better save utility from prelude without prelude
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
   (setq nov-text-width 80)
 #+end_src
+
 
 * Main
   

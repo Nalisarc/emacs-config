@@ -138,6 +138,9 @@ t
 
 (straight-use-package 'crux)
 
+(crux-with-region-or-buffer indent-region)
+(crux-with-region-or-buffer untabify)
+
 (straight-use-package 'super-save)
   
 (super-save-mode +1)
