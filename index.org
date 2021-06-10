@@ -296,6 +296,16 @@ Better save utility from prelude without prelude
 (add-hook 'after-init-hook 'global-company-mode)
 #+end_src
 
+* Nov
+:PROPERTIES:
+:header-args: :noweb-ref nov
+:END:
+
+#+begin_src elisp
+  (straight-use-package 'nov)
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+  (setq nov-text-width 80)
+#+end_src
 
 * Main
   
@@ -306,37 +316,39 @@ Better save utility from prelude without prelude
 
 #+name: init.el
 #+BEGIN_SRC elisp :tangle init.el :noweb yes
-<<straight>>
-
-<<y-n-p>>
-
-<<helm>>
-
-<<helm-bibtex>>
-
-<<org>>
-
-<<disable-toolbar>>
-
-<<custom-file>>
-
-<<yasnippet>>
-
-<<theme>>
-
-<<pdf-tools>>
-
-<<magit>>
-
-<<crux>>
-
-<<super-save>>
-
-<<flyspell>>
-
-<<flycheck>>
-
-<<company>>
+  <<straight>>
+  
+  <<y-n-p>>
+  
+  <<helm>>
+  
+  <<helm-bibtex>>
+  
+  <<org>>
+  
+  <<disable-toolbar>>
+  
+  <<custom-file>>
+  
+  <<yasnippet>>
+  
+  <<theme>>
+  
+  <<pdf-tools>>
+  
+  <<magit>>
+  
+  <<crux>>
+  
+  <<super-save>>
+  
+  <<flyspell>>
+  
+  <<flycheck>>
+  
+  <<company>>
+  
+  <<nov>>
 #+END_SRC
 
 

@@ -160,3 +160,7 @@ t
 
 (straight-use-package 'company)
 (add-hook 'after-init-hook 'global-company-mode)
+
+(straight-use-package 'nov)
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+(setq nov-text-width 80)
