@@ -47,7 +47,7 @@
   (add-to-list 'exec-path "path/to/sqlite3") ; TODO REPLACE WITH VARIABLES
   )
 
-(setq org-roam-directory "~/org-roam") ; TODO REPLACE WITH VARIABLE
+(setq org-roam-directory "~/agcloud/org-roam") ; TODO REPLACE WITH VARIABLE
 (unless (file-directory-p org-roam-directory)
   (make-directory org-roam-directory)
   )
@@ -69,7 +69,7 @@
 (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
       org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
       org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/")
-
+t
 (setq bibtex-completion-pdf-open-function 'org-open-file)
 (straight-use-package 'org-noter)
 (straight-use-package 'hydra)
