@@ -49,9 +49,9 @@
 #+BEGIN_SRC elisp
   (straight-use-package 'helm-bibtex)
 
-  (setq bibtex-completion-bibliography "~/Dropbox/bibliography/references.bib"
-	bibtex-completion-library-path "~/Dropbox/bibliography/bibtex-pdfs"
-	bibtex-completion-notes-path "~/Dropbox/bibliography/bibtex-notes")
+  (setq bibtex-completion-bibliography "~/agcloud/bibliography/references.bib"
+	bibtex-completion-library-path "~/agcloud/bibliography/bibtex-pdfs"
+	bibtex-completion-notes-path "~/agcloud/bibliography/bibtex-notes")
 #+END_SRC
 
 * Org
@@ -101,11 +101,11 @@
 (straight-use-package 'org-ref)
 (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
 
-(setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib"))
+(setq reftex-default-bibliography '("~/agcloud/bibliography/references.bib"))
 
-(setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
-      org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
-      org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/")
+(setq org-ref-bibliography-notes "~/agcloud/bibliography/notes.org"
+      org-ref-default-bibliography '("~/agcloud/bibliography/references.bib")
+      org-ref-pdf-directory "~/agcloud/bibliography/bibtex-pdfs/")
 t
 (setq bibtex-completion-pdf-open-function 'org-open-file)
 #+END_SRC
@@ -116,6 +116,13 @@ t
 #+END_SRC
 
 ** TODO Capture
+#+begin_src elisp
+  (setq org-capture-templates
+	'(
+	  ("t" "Todo" entry (file+headline "~/agcloud/org/gtd.org" "Tasks")
+	   "* TODO %?\n ")
+	  ))
+#+end_src
 
 ** TODO Flash Cards
 #+BEGIN_SRC emacs-lisp
@@ -296,6 +303,15 @@ Better save utility from prelude without prelude
 (add-hook 'after-init-hook 'global-company-mode)
 #+end_src
 
+* Nov
+:PROPERTIES:
+:header-args: :noweb-ref nov
+:END:
+
+#+begin_src elisp
+  (straight-use-package 'nov)
+#+end_src
+
 
 * Main
   
@@ -306,37 +322,39 @@ Better save utility from prelude without prelude
 
 #+name: init.el
 #+BEGIN_SRC elisp :tangle init.el :noweb yes
-<<straight>>
-
-<<y-n-p>>
-
-<<helm>>
-
-<<helm-bibtex>>
-
-<<org>>
-
-<<disable-toolbar>>
-
-<<custom-file>>
-
-<<yasnippet>>
-
-<<theme>>
-
-<<pdf-tools>>
-
-<<magit>>
-
-<<crux>>
-
-<<super-save>>
-
-<<flyspell>>
-
-<<flycheck>>
-
-<<company>>
+  <<straight>>
+  
+  <<y-n-p>>
+  
+  <<helm>>
+  
+  <<helm-bibtex>>
+  
+  <<org>>
+  
+  <<disable-toolbar>>
+  
+  <<custom-file>>
+  
+  <<yasnippet>>
+  
+  <<theme>>
+  
+  <<pdf-tools>>
+  
+  <<magit>>
+  
+  <<crux>>
+  
+  <<super-save>>
+  
+  <<flyspell>>
+  
+  <<flycheck>>
+  
+  <<company>>
+  
+  <<nov>>
 #+END_SRC
 
 

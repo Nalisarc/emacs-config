@@ -31,9 +31,9 @@
 
 (straight-use-package 'helm-bibtex)
 
-(setq bibtex-completion-bibliography "~/Dropbox/bibliography/references.bib"
-      bibtex-completion-library-path "~/Dropbox/bibliography/bibtex-pdfs"
-      bibtex-completion-notes-path "~/Dropbox/bibliography/bibtex-notes")
+(setq bibtex-completion-bibliography "~/agcloud/bibliography/references.bib"
+      bibtex-completion-library-path "~/agcloud/bibliography/bibtex-pdfs"
+      bibtex-completion-notes-path "~/agcloud/bibliography/bibtex-notes")
 
 (straight-use-package 'org)
 (require 'org-protocol)
@@ -64,14 +64,19 @@
 (straight-use-package 'org-ref)
 (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
 
-(setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib"))
+(setq reftex-default-bibliography '("~/agcloud/bibliography/references.bib"))
 
-(setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
-      org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
-      org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/")
+(setq org-ref-bibliography-notes "~/agcloud/bibliography/notes.org"
+      org-ref-default-bibliography '("~/agcloud/bibliography/references.bib")
+      org-ref-pdf-directory "~/agcloud/bibliography/bibtex-pdfs/")
 t
 (setq bibtex-completion-pdf-open-function 'org-open-file)
 (straight-use-package 'org-noter)
+(setq org-capture-templates
+      '(
+	("t" "Todo" entry (file+headline "~/agcloud/org/gtd.org" "Tasks")
+	 "* TODO %?\n ")
+	))
 (straight-use-package 'hydra)
 
 (straight-use-package
@@ -160,3 +165,5 @@ t
 
 (straight-use-package 'company)
 (add-hook 'after-init-hook 'global-company-mode)
+
+(straight-use-package 'nov)
