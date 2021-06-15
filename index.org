@@ -121,8 +121,15 @@ t
 	'(
 	  ("t" "Todo" entry (file+headline "~/agcloud/org/gtd.org" "Tasks")
 	   "* TODO %?\n ")
+	  ("v" "Voice Note" entry
+	   (file+headline "~/agcloud/org/voicenotes.org" "Notes")
+	   "* %:link\n Entered on: %U\n %:description":immediate-finish t)
 	  ))
 #+end_src
+
+#+RESULTS:
+| t | Todo       | entry | (file+headline ~/agcloud/org/gtd.org Tasks)        | * TODO %? |
+| v | Voice Note | entry | (file+headline ~/agcloud/org/voicenotes.org Notes) | * %:link  |
 
 ** TODO Flash Cards
 #+BEGIN_SRC emacs-lisp

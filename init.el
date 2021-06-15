@@ -76,6 +76,9 @@ t
       '(
 	("t" "Todo" entry (file+headline "~/agcloud/org/gtd.org" "Tasks")
 	 "* TODO %?\n ")
+	("v" "Voice Note" entry
+	 (file+headline "~/agcloud/org/voicenotes.org" "Notes")
+	 "* %:link\nEntered on: %U\n %:description":immediate-finish t)
 	))
 (straight-use-package 'hydra)
 
