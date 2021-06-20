@@ -78,7 +78,7 @@ t
 	 "* TODO %?\n ")
 	("v" "Voice Note" entry
 	 (file+headline "~/agcloud/org/voicenotes.org" "Notes")
-	 "* %:link\nEntered on: %U\n %:description":immediate-finish t)
+	 "* %:link\n Entered on: %U\n %:description":immediate-finish t)
 	))
 (straight-use-package 'hydra)
 
@@ -107,17 +107,13 @@ t
       org-roam-server-network-label-wrap-length 20)
 
 (org-roam-server-mode)
-(straight-use-package 'ob-ipython)
+(unless (eq system-type 'cygwin)
+  (straight-use-package 'ob-ipython)
+  (require 'ob-ipython)
+  )
+
 (straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
-  
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((shell . t)
-   (latex . t)
-   (python . t)
-   (ipython . t)
-   (scad . t)
-   ))
+(require 'ob-scad)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1) 

@@ -176,17 +176,13 @@ t
 
 ** TODO ob-ipython
 #+begin_src elisp
-(straight-use-package 'ob-ipython)
-(straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
-  
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((shell . t)
-   (latex . t)
-   (python . t)
-   (ipython . t)
-   (scad . t)
-   ))
+  (unless (eq system-type 'cygwin)
+    (straight-use-package 'ob-ipython)
+    (require 'ob-ipython)
+    )
+    
+  (straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
+  (require 'ob-scad)
 #+end_src
 
 * Yasnippet
