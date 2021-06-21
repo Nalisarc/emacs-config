@@ -318,6 +318,19 @@ Better save utility from prelude without prelude
 #+end_src
 
 
+* Elpy
+:PROPERTIES:
+:header-args: :noweb-ref elpy
+:END:
+
+Install elpy using:
+#+begin_src elisp
+  (straight-use-package 'elpy)
+  (setq elpy-rpc-python-command "python3")
+  (elpy-enable)
+#+end_src
+
+#+RESULTS:
 
 * Main
   
