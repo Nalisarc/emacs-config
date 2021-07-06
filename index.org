@@ -378,6 +378,8 @@ Install elpy using:
   <<company>>
   
   <<nov>>
+  
+  <<elpy>>
 #+END_SRC
 
 

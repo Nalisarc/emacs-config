@@ -172,3 +172,7 @@ t
 (straight-use-package 'nov)
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 (setq nov-text-width 80)
+
+(straight-use-package 'elpy)
+(setq elpy-rpc-python-command "python3")
+(elpy-enable)
