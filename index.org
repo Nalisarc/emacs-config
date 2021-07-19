@@ -71,6 +71,37 @@
   (global-set-key (kbd "C-c c") 'org-capture)
 #+END_SRC
 
+** Latex macro
+#+begin_src elisp
+  (add-to-list 'org-src-lang-modes '("latex-macros" . latex))
+  
+  (defvar org-babel-default-header-args:latex-macros
+    '((:results . "raw")
+      (:exports . "results")))
+  
+  (defun prefix-all-lines (pre body)
+    (with-temp-buffer
+      (insert body)
+      (string-insert-rectangle (point-min) (point-max) pre)
+      (buffer-string)))
+  
+  (defun org-babel-execute:latex-macros (body _params)
+    (concat
+     (prefix-all-lines "#+LATEX_HEADER: " body)
+     "\n#+HTML_HEAD_EXTRA: <div style=\"display: none\"> \\(\n"
+     (prefix-all-lines "#+HTML_HEAD_EXTRA: " body)
+     "\n#+HTML_HEAD_EXTRA: \\)</div>\n"))
+#+end_src
+
+** inline Javascript
+#+begin_src elisp
+  (add-to-list 'org-src-lang-modes '("inline-js" . javascript))
+  (defvar org-babel-default-header-args:inline-js
+    '((:results . "html")
+      (:exports . "results")))
+  (defun org-babel-execute:inline-js (body _params)
+    (format "<script type=\"text/javascript\">\n%s\n</script>" body))
+#+end_src
 
 ** TODO Roam
 #+BEGIN_SRC elisp
