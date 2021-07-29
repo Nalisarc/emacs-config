@@ -44,27 +44,34 @@
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c c") 'org-capture)
+(setq org-roam-v2-ack t)
 (straight-use-package 'org-roam)
 (require 'org-roam-protocol)
+
 
 (unless (executable-find "sqlite3")
   (add-to-list 'exec-path "path/to/sqlite3") ; TODO REPLACE WITH VARIABLES
   )
 
-(setq org-roam-directory "~/agcloud/org-roam") ; TODO REPLACE WITH VARIABLE
+(setq org-roam-directory "~/agcloud/org-roam/") ; TODO REPLACE WITH VARIABLE
 (unless (file-directory-p org-roam-directory)
   (make-directory org-roam-directory)
   )
 
+(with-eval-after-load 'org
+(progn
+  (setq org-roam-v2-ack t) ;; acknowledge upgrade and remove warning at startup
+  (setq org-roam-db-location
+	(concat org-roam-directory "org-roam.db"))
+  (org-roam-setup)))
 
-(add-hook 'after-init-hook 'org-roam-mode)
+;; insert a link to an org-roam file – `org-roam-insert' in v1:
+(global-set-key (kbd "C-c i") 'org-roam-node-insert)
+;; open a file in org-roam – `org-roam-find-file' in v1:
+(global-set-key (kbd "C-c o") 'org-roam-node-find)
+;; open backlinks buffer – `org-roam' in v1:
+(global-set-key (kbd "C-c r") 'org-roam-buffer-toggle)
 
-(global-set-key (kbd "C-c n") 'org-roam-mode-map)
-(define-key org-roam-mode-map (kbd "C-c n l") 'org-roam)
-(define-key org-roam-mode-map (kbd "C-c n f") 'org-roam-find-file)
-(define-key org-roam-mode-map (kbd "C-c n g") 'org-roam-graph)
-(define-key org-mode-map (kbd "C-c n i") 'org-roam-insert)
-(define-key org-mode-map (kbd "C-c n I") 'org-roam-insert-immediate)
 (straight-use-package 'org-ref)
 (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
 
@@ -97,20 +104,6 @@ t
 (add-hook 'org-roam-mode-hook #'org-roam-bibtex-mode)
 (straight-use-package 'org-download)
 (add-hook 'dired-mode-hook 'org-download-enable)
-(straight-use-package 'org-roam-server)
-(setq org-roam-server-host "127.0.0.1"
-      org-roam-server-port 8080
-      org-roam-server-authenticate nil
-      org-roam-server-export-inline-images t
-      org-roam-server-serve-files nil
-      org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
-      org-roam-server-network-poll t
-      org-roam-server-network-arrows nil
-      org-roam-server-network-label-truncate t
-      org-roam-server-network-label-truncate-length 60
-      org-roam-server-network-label-wrap-length 20)
-
-(org-roam-server-mode)
 (unless (eq system-type 'cygwin)
   (straight-use-package 'ob-ipython)
   (require 'ob-ipython)
