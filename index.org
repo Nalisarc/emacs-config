@@ -1,4 +1,4 @@
-#+Title: Emacs Customization and Setup
+xw#+Title: Emacs Customization and Setup
 #+Author: Δelta A Bates-Smith
 #+Email: nalisarc@gmail.com
 #+STARTUP: overview
@@ -324,7 +324,6 @@ Install elpy using:
 #+end_src
 
 #+RESULTS:
-
 * Main
   
 #+name: early-init.el 
@@ -368,6 +367,9 @@ Install elpy using:
   
   <<nov>>
 #+END_SRC
+
+#+RESULTS: init.el
+: 80
 
 
 
