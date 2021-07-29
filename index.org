@@ -1,4 +1,4 @@
-xw#+Title: Emacs Customization and Setup
+#+Title: Emacs Customization and Setup
 #+Author: Δelta A Bates-Smith
 #+Email: nalisarc@gmail.com
 #+STARTUP: overview
