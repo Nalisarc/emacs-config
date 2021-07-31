@@ -105,37 +105,36 @@
 
 ** TODO Roam
 #+BEGIN_SRC elisp
-(setq org-roam-v2-ack t)
-  (straight-use-package 'org-roam)
-  (require 'org-roam-protocol)
+  (setq org-roam-v2-ack t)
+    (straight-use-package 'org-roam)
+    (require 'org-roam-protocol)
+    
+    
+    (unless (executable-find "sqlite3")
+      (add-to-list 'exec-path "path/to/sqlite3") ; TODO REPLACE WITH VARIABLES
+      )
+    
+    (setq org-roam-directory "~/agcloud/org-roam/") ; TODO REPLACE WITH VARIABLE
+    (unless (file-directory-p org-roam-directory)
+      (make-directory org-roam-directory)
+      )
+    
+    (with-eval-after-load 'org
+    (progn
+      (setq org-roam-v2-ack t) ;; acknowledge upgrade and remove warning at startup
+      (setq org-roam-db-location
+	    (concat org-roam-directory "org-roam.db"))
+      (org-roam-setup)
+    
+    (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
+    (global-set-key (kbd "C-c n f") 'org-roam-node-find)
+    (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
   
-  
-  (unless (executable-find "sqlite3")
-    (add-to-list 'exec-path "path/to/sqlite3") ; TODO REPLACE WITH VARIABLES
-    )
-  
-  (setq org-roam-directory "~/agcloud/org-roam/") ; TODO REPLACE WITH VARIABLE
-  (unless (file-directory-p org-roam-directory)
-    (make-directory org-roam-directory)
-    )
-  
-  (with-eval-after-load 'org
-  (progn
-    (setq org-roam-v2-ack t) ;; acknowledge upgrade and remove warning at startup
-    (setq org-roam-db-location
-	  (concat org-roam-directory "org-roam.db"))
-    (org-roam-setup)))
-  
-  ;; insert a link to an org-roam file – `org-roam-insert' in v1:
-  (global-set-key (kbd "C-c i") 'org-roam-node-insert)
-  ;; open a file in org-roam – `org-roam-find-file' in v1:
-  (global-set-key (kbd "C-c o") 'org-roam-node-find)
-  ;; open backlinks buffer – `org-roam' in v1:
-  (global-set-key (kbd "C-c r") 'org-roam-buffer-toggle)
+    ))
 #+END_SRC
 
 #+RESULTS:
-: org-roam-insert-immediate
+: org-roam-buffer-toggle
 
 ** TODO Ref
 #+BEGIN_SRC elisp
