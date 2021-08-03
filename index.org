@@ -160,11 +160,15 @@ t
 #+begin_src elisp
   (setq org-capture-templates
 	'(
-	  ("t" "Todo" entry (file+headline "~/agcloud/org/inbox.org" "Tasks")
+	  ("t" "Todo" entry (file+headline "~/agcloud/org/inbox.org" "Inbox")
 	   "* TODO %?\n ")
-	  ("i" "Idea" entry(file+headline "~/agcloud/org/inbox.org" "Idea")
+	  ("e" "Entry" entry(file+headline "~/agcloud/org/inbox.org" "Inbox")
 	   "* %?\n ")
 	  ))
+#+end_src
+
+** TODO Agenda
+#+begin_src elisp
 #+end_src
 
 

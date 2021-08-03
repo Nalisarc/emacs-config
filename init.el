@@ -108,11 +108,12 @@ t
 (straight-use-package 'org-noter)
 (setq org-capture-templates
       '(
-	("t" "Todo" entry (file+headline "~/agcloud/org/inbox.org" "Tasks")
+	("t" "Todo" entry (file+headline "~/agcloud/org/inbox.org" "Inbox")
 	 "* TODO %?\n ")
-	("i" "Idea" entry(file+headline "~/agcloud/org/inbox.org" "Idea")
+	("e" "Entry" entry(file+headline "~/agcloud/org/inbox.org" "Inbox")
 	 "* %?\n ")
 	))
+
 (straight-use-package 'hydra)
 
 (straight-use-package
