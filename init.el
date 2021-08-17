@@ -11,6 +11,10 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(straight-use-package 'dashboard)
+(require 'dashboard)
+(dashboard-setup-startup-hook)
+
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (straight-use-package 'helm)
@@ -113,6 +117,10 @@ t
 	("e" "Entry" entry(file+headline "~/agcloud/org/inbox.org" "Inbox")
 	 "* %?\n ")
 	))
+(setq org-agenda-files '("~/agcloud/org/inbox.org"
+			   "~/agcloud/org/gtd.org"
+			   "~/agcloud/org/tickler.org"))
+
 (setq org-agenda-custom-commands 
       '(("o" "At the office" tags-todo "@office"
 	 ((org-agenda-overriding-header "Office")

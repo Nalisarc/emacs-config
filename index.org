@@ -54,6 +54,18 @@
 	bibtex-completion-notes-path "~/agcloud/bibliography/bibtex-notes")
 #+END_SRC
 
+* TODO Dashboard
+:PROPERTIES:
+:header-args: :noweb-ref dashboard
+:END:
+
+#+begin_src elisp
+  (straight-use-package 'dashboard)
+  (require 'dashboard)
+  (dashboard-setup-startup-hook)
+#+end_src
+
+
 * Org
   :PROPERTIES:
   :header-args: :noweb-ref org
@@ -103,7 +115,7 @@
     (format "<script type=\"text/javascript\">\n%s\n</script>" body))
 #+end_src
 
-** TODO Roam
+** Roam
 #+BEGIN_SRC elisp
   (setq org-roam-v2-ack t)
     (straight-use-package 'org-roam)
@@ -137,7 +149,7 @@
 #+RESULTS:
 : org-roam-capture-today
 
-** TODO Ref
+** Ref
 #+BEGIN_SRC elisp
 (straight-use-package 'org-ref)
 (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
@@ -151,12 +163,12 @@ t
 (setq bibtex-completion-pdf-open-function 'org-open-file)
 #+END_SRC
 
-** TODO Noter
+** Noter
 #+BEGIN_SRC elisp
 (straight-use-package 'org-noter)
 #+END_SRC
 
-** TODO Capture
+** Capture
 #+begin_src elisp
   (setq org-capture-templates
 	'(
@@ -169,27 +181,34 @@ t
 
 ** TODO Agenda
 #+begin_src elisp
-    (setq org-agenda-custom-commands 
-	  '(("o" "At the office" tags-todo "@office"
-	     ((org-agenda-overriding-header "Office")
-	      (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
-    
-    (defun my-org-agenda-skip-all-siblings-but-first ()
-      "Skip all but the first non-done entry."
-      (let (should-skip-entry)
-	(unless (org-current-is-todo)
-	  (setq should-skip-entry t))
-	(save-excursion
-	  (while (and (not should-skip-entry) (org-goto-sibling t))
-	    (when (org-current-is-todo)
-	      (setq should-skip-entry t))))
-	(when should-skip-entry
-	  (or (outline-next-heading)
-	      (goto-char (point-max))))))
-		      
-    (defun org-current-is-todo ()
-      (string= "TODO" (org-get-todo-state)))
+  (setq org-agenda-files '("~/agcloud/org/inbox.org"
+			     "~/agcloud/org/gtd.org"
+			     "~/agcloud/org/tickler.org"))
+  
+  (setq org-agenda-custom-commands 
+	'(("o" "At the office" tags-todo "@office"
+	   ((org-agenda-overriding-header "Office")
+	    (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
+  
+  (defun my-org-agenda-skip-all-siblings-but-first ()
+    "Skip all but the first non-done entry."
+    (let (should-skip-entry)
+      (unless (org-current-is-todo)
+	(setq should-skip-entry t))
+      (save-excursion
+	(while (and (not should-skip-entry) (org-goto-sibling t))
+	  (when (org-current-is-todo)
+	    (setq should-skip-entry t))))
+      (when should-skip-entry
+	(or (outline-next-heading)
+	    (goto-char (point-max))))))
+  
+  (defun org-current-is-todo ()
+    (string= "TODO" (org-get-todo-state)))
 #+end_src
+
+#+RESULTS:
+: org-current-is-todo
 
 ** Refile
 #+begin_src elisp
@@ -214,7 +233,7 @@ t
   (require 'org-fc-hydra)
 #+END_SRC
 
-** TODO roam-bibtex
+** roam-bibtex
 #+BEGIN_SRC elisp
 (straight-use-package 'org-roam-bibtex)
 (add-hook 'org-roam-mode-hook #'org-roam-bibtex-mode)
@@ -226,7 +245,7 @@ t
 (add-hook 'dired-mode-hook 'org-download-enable)
 #+END_SRC
 
-** TODO ob-ipython
+** ob-ipython
 #+begin_src elisp
   (unless (eq system-type 'cygwin)
     (straight-use-package 'ob-ipython)
@@ -236,6 +255,12 @@ t
   (straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
   (require 'ob-scad)
 #+end_src
+
+** org-roam-ui
+
+
+#+RESULTS:
+: t
 
 * Yasnippet
   :PROPERTIES:
@@ -395,6 +420,8 @@ Install elpy using:
 #+BEGIN_SRC elisp :tangle init.el :noweb yes
   <<straight>>
   
+  <<dashboard>>
+  
   <<y-n-p>>
   
   <<helm>>
@@ -433,3 +460,16 @@ Install elpy using:
 #+RESULTS: init.el
 
 
+
+
+#+begin_src elisp
+  (straight-use-package '(org-roam-ui :host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out")))
+  
+  (setq org-roam-ui-sync-theme t
+	    org-roam-ui-follow t
+	    org-roam-ui-update-on-save t
+	    org-roam-ui-open-on-start t))
+#+end_src
+
+#+RESULTS:
+: t
