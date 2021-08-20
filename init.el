@@ -165,7 +165,7 @@ t
 (require 'ob-scad)
 (straight-use-package 'ob-async)
 (require 'ob-async)
-(setq ob-async-no-async-languages-alist '("ipython"))
+;;(setq ob-async-no-async-languages-alist '("ipython"))
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)

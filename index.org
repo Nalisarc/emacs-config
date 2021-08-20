@@ -264,9 +264,9 @@ t
 
 ** ob-async
 #+begin_src elisp
-  (straight-use-package 'ob-async)
-  (require 'ob-async)
-  (setq ob-async-no-async-languages-alist '("ipython"))
+    (straight-use-package 'ob-async)
+    (require 'ob-async)
+    ;;(setq ob-async-no-async-languages-alist '("ipython"))
 #+end_src
 
 #+RESULTS:
