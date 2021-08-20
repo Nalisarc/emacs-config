@@ -166,6 +166,14 @@ t
 (straight-use-package 'ob-async)
 (require 'ob-async)
 (setq ob-async-no-async-languages-alist '("ipython"))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (ipython . t)
+   (scad . t)
+   (shell . t)
+   ))
+
 
 (menu-bar-mode -1)
 (tool-bar-mode -1) 

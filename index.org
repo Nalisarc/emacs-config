@@ -272,6 +272,20 @@ t
 #+RESULTS:
 | ipython |
 
+** load all babel languages
+#+begin_src elisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (ipython . t)
+     (scad . t)
+     (shell . t)
+     ))
+  
+#+end_src
+
+#+RESULTS:
+
 
 * Yasnippet
   :PROPERTIES:
