@@ -161,9 +161,11 @@ t
   (straight-use-package 'ob-ipython)
   (require 'ob-ipython)
   )
-
 (straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
 (require 'ob-scad)
+(straight-use-package 'ob-async)
+(require 'ob-async)
+(setq ob-async-no-async-languages-alist '("ipython"))
 
 (menu-bar-mode -1)
 (tool-bar-mode -1) 

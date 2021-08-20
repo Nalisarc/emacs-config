@@ -251,16 +251,27 @@ t
     (straight-use-package 'ob-ipython)
     (require 'ob-ipython)
     )
-    
-  (straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
-  (require 'ob-scad)
 #+end_src
 
-** org-roam-ui
+#+RESULTS:
+: ob-ipython
 
+** ob-scad
+#+begin_src elisp
+    (straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
+    (require 'ob-scad)
+#+end_src
+
+** ob-async
+#+begin_src elisp
+  (straight-use-package 'ob-async)
+  (require 'ob-async)
+  (setq ob-async-no-async-languages-alist '("ipython"))
+#+end_src
 
 #+RESULTS:
-: t
+| ipython |
+
 
 * Yasnippet
   :PROPERTIES:
