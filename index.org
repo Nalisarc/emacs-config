@@ -434,6 +434,16 @@ Install elpy using:
 
 #+RESULTS:
 
+* Save backups in one place
+#+name: set-backup-dir
+#+begin_src elisp
+  ;; store all backup and autosave files in the tmp dir
+  (setq backup-directory-alist
+	`((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+	`((".*" ,temporary-file-directory t)))
+#+end_src
+
 * Main
   
 #+name: early-init.el 
@@ -480,6 +490,8 @@ Install elpy using:
   <<nov>>
   
   <<elpy>>
+  
+  <<set-backup-dir>>
 #+END_SRC
 
 #+RESULTS: init.el
