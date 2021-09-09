@@ -5,6 +5,21 @@
 
 
 * TODO Useful Constants
+#+name: constants
+#+begin_src elisp
+  (setq agcloud-dir "~/agcloud/")
+#+end_src
+
+#+RESULTS: agcloud
+: ~/agcloud/bibliography/
+
+* How to smartly combine path names
+#+begin_src elisp
+  (concat "~/Test/" "foo.bar")
+#+end_src
+
+#+RESULTS:
+: ~/Test/foo.bar
 
 * TODO Refactor working modules to use use-package + straight
 * Straight
@@ -47,31 +62,33 @@ After straight is installed we can have it install use-package which will greatl
   :header-args: :noweb-ref helm
   :END:
 #+BEGIN_SRC elisp
-  (straight-use-package 'helm)
-  (helm-mode 1)
-  (global-set-key (kbd "C-c h") 'helm-command-prefix)
-  (global-unset-key (kbd "C-x c"))
-
-  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
-  (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-  (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-
-  (global-set-key (kbd "M-x") #'helm-M-x)
-  (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
-  (global-set-key (kbd "C-x C-f") #'helm-find-files)
-  (global-set-key (kbd "C-x b") 'helm-mini)
-  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-  (global-set-key (kbd "C-c h o") 'helm-occur)
+  (use-package helm
+    :straight t
+    :bind (("C-c h" . helm-command-prefix)
+	   ("M-x" . helm-M-x)
+	   ("C-x r b" . helm-filtered-bookmarks)
+	   ("C-x C-f" . helm-find-files)
+	   ("C-x b" . helm-mini)
+	   ("M-y" . helm-show-kill-ring))
+    :config
+    (helm-mode 1)
+    )
 #+END_SRC
+
+#+RESULTS:
+: helm-occur
 
 * Helm Bibtex
 #+name: helm-bibtex
 #+BEGIN_SRC elisp
-  (straight-use-package 'helm-bibtex)
-
-  (setq bibtex-completion-bibliography "~/agcloud/bibliography/references.bib"
-	bibtex-completion-library-path "~/agcloud/bibliography/bibtex-pdfs"
-	bibtex-completion-notes-path "~/agcloud/bibliography/bibtex-notes")
+  (use-package helm-bibtex
+    :straight t
+    :config
+    (setq bib-dir (concat (file-name-as-directory agcloud-dir) "bibliography/")
+	  bibtex-completion-bibliography (concat (file-name-as-directory bib-dir) "references.bib")
+	  bibtex-completion-library-path (concat (file-name-as-directory bib-dir) "bibtex-pdfs")
+	  bibtex-completion-notes-path (concat (file-name-as-directory bib-dir) "bibtex-notes")
+	  ))
 #+END_SRC
 
 * Dashboard
@@ -80,10 +97,14 @@ After straight is installed we can have it install use-package which will greatl
 :END:
 
 #+begin_src elisp
-  (straight-use-package 'dashboard)
-  (require 'dashboard)
-  (dashboard-setup-startup-hook)
+  (use-package dashboard
+    :straight t
+    :config
+    (dashboard-setup-startup-hook))
 #+end_src
+
+#+RESULTS:
+: t
 
 * BBDB
 :PROPERTIES:
@@ -91,9 +112,16 @@ After straight is installed we can have it install use-package which will greatl
 :END:
 
 #+begin_src elisp
-  (straight-use-package 'bbdb)
-  (straight-use-package 'helm-bbdb)
+  (use-package bbdb
+    :straight t)
+
+  (use-package helm-bbdb
+    :straight t
+    :after (helm bbdb)
+    )
 #+end_src
+
+#+RESULTS:
 
 * Org
   :PROPERTIES:
@@ -101,16 +129,21 @@ After straight is installed we can have it install use-package which will greatl
   :END:
 
 #+BEGIN_SRC elisp
-  (straight-use-package 'org)
-  (require 'org-protocol)
+  (use-package org
+    :straight t
+    :bind (("C-c l" . org-store-link)
+	   ("C-c a" . org-agenda)
+	   ("C-c c" . org-capture))
+    :config
+    (setq indent-tabs-mode nil
+	  org-src-preserve-indentation nil)
+    (require 'org-protocol)
   
-  (setq indent-tabs-mode nil)
-  (setq org-src-preserve-indentation nil)
-  
-  (global-set-key (kbd "C-c l") 'org-store-link)
-  (global-set-key (kbd "C-c a") 'org-agenda)
-  (global-set-key (kbd "C-c c") 'org-capture)
+  )
 #+END_SRC
+
+#+RESULTS:
+: org-capture
 
 ** Latex macro
 #+begin_src elisp
@@ -146,33 +179,25 @@ After straight is installed we can have it install use-package which will greatl
 
 ** Roam
 #+BEGIN_SRC elisp
-  (setq org-roam-v2-ack t)
-    (straight-use-package 'org-roam)
-    (require 'org-roam-protocol)
+  (use-package org-roam
+    :straight t
+    :init
+    (setq org-roam-v2-ack t
+	  org-roam-directory (concat
+			      (file-name-as-directory agcloud-dir) "org-roam/")
+	  )
   
-  
-    (unless (executable-find "sqlite3")
-      (add-to-list 'exec-path "path/to/sqlite3") ; TODO REPLACE WITH VARIABLES
-      )
-  
-    (setq org-roam-directory "~/agcloud/org-roam/") ; TODO REPLACE WITH VARIABLE
-    (unless (file-directory-p org-roam-directory)
-      (make-directory org-roam-directory)
-      )
-  
-    (with-eval-after-load 'org
-    (progn
-      (setq org-roam-v2-ack t) ;; acknowledge upgrade and remove warning at startup
-      (setq org-roam-db-location
-	    (concat org-roam-directory "org-roam.db"))
-      (org-roam-setup)
-  
-    (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
-    (global-set-key (kbd "C-c n f") 'org-roam-node-find)
-    (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
-    (global-set-key (kbd "C-c n d") 'org-roam-capture-today)
-  
-    ))
+
+    :bind (("C-c n i" . org-roam-node-insert)
+	   ("C-c n f" . org-roam-node-find)
+	   ("C-c n l" . 'org-roam-buffer-toggle)
+	   ("C-c n d" . 'org-roam-capture-today))
+    :after (org)
+
+    :config
+    (setq org-roam-db-location (concat org-roam-directory "org-roam.db"))
+    (org-roam-setup))
+
 #+END_SRC
 
 #+RESULTS:
@@ -180,21 +205,23 @@ After straight is installed we can have it install use-package which will greatl
 
 ** Ref
 #+BEGIN_SRC elisp
-(straight-use-package 'org-ref)
-(setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
-
-(setq reftex-default-bibliography '("~/agcloud/bibliography/references.bib"))
-
-(setq org-ref-bibliography-notes "~/agcloud/bibliography/notes.org"
-      org-ref-default-bibliography '("~/agcloud/bibliography/references.bib")
-      org-ref-pdf-directory "~/agcloud/bibliography/bibtex-pdfs/")
-t
-(setq bibtex-completion-pdf-open-function 'org-open-file)
+  (use-package org-ref
+    :straight t
+    :config
+    (setq bib-dir (concat (file-name-as-directory agcloud-dir) "bibliography/")
+	  reftex-default-bibliography (concat (file-name-as-directory bib-dir) "references.bib")
+	  org-ref-bibliography-notes (concat (file-name-as-directory bib-dir) "notes.org")
+	  org-ref-pdf-directory (concat (file-name-as-directory bib-dir) "bibtex-pdfs/")
+	  org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f")
+	  bibtex-completion-pdf-open-function 'org-open-file)
+    )
 #+END_SRC
 
 ** Noter
 #+BEGIN_SRC elisp
-(straight-use-package 'org-noter)
+  (use-package org-noter
+    :straight t
+    )
 #+END_SRC
 
 ** Capture
@@ -251,16 +278,15 @@ t
 
 ** TODO Flash Cards
 #+BEGIN_SRC emacs-lisp
-  (straight-use-package 'hydra)
-  
-  (straight-use-package
-   '(org-fc
-     :type git :repo "https://git.sr.ht/~l3kn/org-fc"
-     :files (:defaults "awk" "demo.org")
-     :custom (org-fc-directories '("~/org/"))))
-  
-  (require 'org-fc-hydra)
+  (use-package org-fc
+    :straight (:type git
+		     :repo "https://git.sr.ht/~l3kn/org-fc"
+		     :files (:defaults "awk" "demo.org")
+		     )
+    )
 #+END_SRC
+
+#+RESULTS:
 
 ** roam-bibtex
 #+BEGIN_SRC elisp
@@ -270,15 +296,19 @@ t
 
 ** TODO Org-Download
 #+BEGIN_SRC emacs-lisp
-(straight-use-package 'org-download)
-(add-hook 'dired-mode-hook 'org-download-enable)
+  (use-package org-download
+    :straight t
+    :hook (dired-mode-hook . org-download-enable)
+    )
+
 #+END_SRC
+
+#+RESULTS:
 
 ** ob-ipython
 #+begin_src elisp
-  (unless (eq system-type 'cygwin)
-    (straight-use-package 'ob-ipython)
-    (require 'ob-ipython)
+  (use-package ob-ipython
+    :straight t
     )
 #+end_src
 
@@ -287,15 +317,14 @@ t
 
 ** ob-scad
 #+begin_src elisp
-    (straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
-    (require 'ob-scad)
+  (use-package ob-scad
+    :straight (:type git :host github :repo "wose/ob-scad"))
 #+end_src
 
 ** ob-async
 #+begin_src elisp
-    (straight-use-package 'ob-async)
-    (require 'ob-async)
-    ;;(setq ob-async-no-async-languages-alist '("ipython"))
+  (use-package ob-async
+    :straight t)
 #+end_src
 
 #+RESULTS:
@@ -310,10 +339,10 @@ t
      (scad . t)
      (shell . t)
      ))
-  
 #+end_src
 
 #+RESULTS:
+
 
 * Yasnippet
   :PROPERTIES:
@@ -321,10 +350,14 @@ t
   :END:
 
 #+BEGIN_SRC elisp
-(straight-use-package 'yasnippet)
-(straight-use-package 'yasnippet-snippets)
+  (use-package yasnippet
+    :straight t
+    :config
+    (yas-global-mode 1)
+    )
 
-(yas-global-mode 1)
+  (use-package yasnippet-snippets
+    :straight t)
 #+END_SRC
 
 * Disable Toolbar
@@ -358,14 +391,17 @@ t
 * Pdf Tools
 #+name: pdf-tools
 #+BEGIN_SRC elisp
-(straight-use-package 'pdf-tools)
-(pdf-tools-install)
+  (use-package pdf-tools
+    :straight t
+    :config
+    (pdf-tools-install))
 #+END_SRC
 
 * Magit
 #+name: magit
 #+BEGIN_SRC elisp
-(straight-use-package 'magit)
+  (use-package magit
+    :straight t)
 #+END_SRC
 
 * Allow y/n instead of yes/no
@@ -381,7 +417,8 @@ t
 
 Crux is the helpful functions from prelude, without needing to use prelude
 #+begin_src elisp
-(straight-use-package 'crux)
+  (use-package crux
+    :straight t)
 #+end_src
 
 * Super Save
@@ -391,18 +428,18 @@ Crux is the helpful functions from prelude, without needing to use prelude
 
 Better save utility from prelude without prelude
 #+begin_src elisp
-(straight-use-package 'super-save)
-  
-(super-save-mode +1)
-  
-(setq auto-save-default nil)
-  
-(setq super-save-exclude '(".gpg"))
-  
-(setq super-save-remote-files nil)
-  
-(add-to-list 'super-save-hook-triggers 'find-file-hook)
+  (use-package super-save
+    :straight t
+    :config
+    (super-save-mode +1)
+    (setq auto-save-default nil
+	  super-save-exclude '(".gpg")
+	  super-save-remote-files nil)
+    (add-to-list 'super-save-hook-triggers 'find-file-hook))
 #+end_src
+
+#+RESULTS:
+: t
 
 * Flyspell
 :PROPERTIES:
@@ -410,9 +447,12 @@ Better save utility from prelude without prelude
 :END:
 
 #+begin_src elisp
-(require 'flyspell)
-(setq ispell-program-name "aspell" ; use aspell instead of ispell
-      ispell-extra-args '("--sug-mode=ultra"))
+  (use-package flyspell
+    :straight t
+    :config
+    (setq ispell-program-name "aspell"
+	  ispell-extra-args '("--sug-mode=ultra"))
+    )
 #+end_src
 
 * Flycheck
@@ -421,10 +461,15 @@ Better save utility from prelude without prelude
 :END:
 
 #+begin_src elisp
-(straight-use-package 'flycheck)
-(straight-use-package 'flycheck-rust)
-(add-hook 'after-init-hook #'global-flycheck-mode)
+  (use-package flycheck
+    :straight t
+    :config
+    (global-flycheck-mode 1)
+    )
 #+end_src
+
+#+RESULTS:
+: t
 
 * Company
 :PROPERTIES:
@@ -432,9 +477,14 @@ Better save utility from prelude without prelude
 :END:
 
 #+begin_src emacs-lisp
-(straight-use-package 'company)
-(add-hook 'after-init-hook 'global-company-mode)
+  (use-package company
+    :straight t
+    :config (global-company-mode 1)
+    )
 #+end_src
+
+#+RESULTS:
+: t
 
 * Nov
 :PROPERTIES:
@@ -442,9 +492,11 @@ Better save utility from prelude without prelude
 :END:
 
 #+begin_src elisp
-  (straight-use-package 'nov)
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-  (setq nov-text-width 80)
+  (use-package nov
+    :straight t
+    :config
+    (setq nov-text-width 80)
+    :mode "\\.epub\\'")
 #+end_src
 
 * Elpy
@@ -454,9 +506,12 @@ Better save utility from prelude without prelude
 
 Install elpy using:
 #+begin_src elisp
-  (straight-use-package 'elpy)
-  (setq elpy-rpc-python-command "python3")
-  (elpy-enable)
+  (use-package elpy
+    :straight t
+    :init
+    (setq elpy-rpc-python-command "python3")
+    :config
+    (elpy-enable))
 #+end_src
 
 #+RESULTS:
@@ -476,63 +531,48 @@ Install elpy using:
 #+name: init.el
 #+BEGIN_SRC elisp :tangle init.el :noweb yes
   <<straight>>
-  
+
   <<use-package>>
-  
+
+  <<constants>>
+
   <<dashboard>>
-  
+
   <<y-n-p>>
-  
+
   <<helm>>
-  
+
   <<helm-bibtex>>
-  
+
   <<org>>
-  
+
   <<disable-toolbar>>
-  
+
   <<custom-file>>
-  
+
   <<yasnippet>>
-  
+
   <<theme>>
-  
+
   <<pdf-tools>>
-  
+
   <<magit>>
-  
+
   <<crux>>
-  
+
   <<super-save>>
-  
+
   <<flyspell>>
-  
+
   <<flycheck>>
-  
+
   <<company>>
-  
+
   <<nov>>
-  
+
   <<elpy>>
-  
+
   <<set-backup-dir>>
-  
+
   <<bbdb>>
 #+END_SRC
-
-#+RESULTS: init.el
-
-
-
-
-#+begin_src elisp
-  (straight-use-package '(org-roam-ui :host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out")))
-  
-  (setq org-roam-ui-sync-theme t
-	    org-roam-ui-follow t
-	    org-roam-ui-update-on-save t
-	    org-roam-ui-open-on-start t))
-#+end_src
-
-#+RESULTS:
-: t
