@@ -238,3 +238,6 @@ t
       `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
+
+(straight-use-package 'bbdb)
+(straight-use-package 'helm-bbdb)

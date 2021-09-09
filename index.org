@@ -54,7 +54,7 @@
 	bibtex-completion-notes-path "~/agcloud/bibliography/bibtex-notes")
 #+END_SRC
 
-* TODO Dashboard
+* Dashboard
 :PROPERTIES:
 :header-args: :noweb-ref dashboard
 :END:
@@ -63,6 +63,16 @@
   (straight-use-package 'dashboard)
   (require 'dashboard)
   (dashboard-setup-startup-hook)
+#+end_src
+
+* BBDB
+:PROPERTIES:
+:header-args: :noweb-ref bbdb
+:END:
+
+#+begin_src elisp
+  (straight-use-package 'bbdb)
+  (straight-use-package 'helm-bbdb)
 #+end_src
 
 
@@ -492,6 +502,8 @@ Install elpy using:
   <<elpy>>
   
   <<set-backup-dir>>
+  
+  <<bbdb>>
 #+END_SRC
 
 #+RESULTS: init.el
