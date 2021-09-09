@@ -14,47 +14,43 @@
 (straight-use-package 'use-package)
 (straight-use-package 'use-package-hydra)
 
-(setq agcloud-dir "~/agcloud/")
-
-(use-package dashboard
-  :straight t
-  :config
-  (dashboard-setup-startup-hook))
+(straight-use-package 'dashboard)
+(require 'dashboard)
+(dashboard-setup-startup-hook)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(use-package helm
-  :straight t
-  :bind (("C-c h" . helm-command-prefix)
-	 ("M-x" . helm-M-x)
-	 ("C-x r b" . helm-filtered-bookmarks)
-	 ("C-x C-f" . helm-find-files)
-	 ("C-x b" . helm-mini)
-	 ("M-y" . helm-show-kill-ring))
-  :config
-  (helm-mode 1)
-  )
+(straight-use-package 'helm)
+(helm-mode 1)
+(global-set-key (kbd "C-c h") 'helm-command-prefix)
+(global-unset-key (kbd "C-x c"))
 
-(use-package helm-bibtex
-  :straight t
-  :config
-  (setq bib-dir (concat (file-name-as-directory agcloud-dir) "bibliography/")
-	bibtex-completion-bibliography (concat (file-name-as-directory bib-dir) "references.bib")
-	bibtex-completion-library-path (concat (file-name-as-directory bib-dir) "bibtex-pdfs")
-	bibtex-completion-notes-path (concat (file-name-as-directory bib-dir) "bibtex-notes")
-	))
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
+(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+(define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
 
-(use-package org
-  :straight t
-  :bind (("C-c l" . org-store-link)
-	 ("C-c a" . org-agenda)
-	 ("C-c c" . org-capture))
-  :config
-  (setq indent-tabs-mode nil
-	org-src-preserve-indentation nil)
-  (require 'org-protocol)
+(global-set-key (kbd "M-x") #'helm-M-x)
+(global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
+(global-set-key (kbd "C-x C-f") #'helm-find-files)
+(global-set-key (kbd "C-x b") 'helm-mini)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+(global-set-key (kbd "C-c h o") 'helm-occur)
 
-)
+(straight-use-package 'helm-bibtex)
+
+(setq bibtex-completion-bibliography "~/agcloud/bibliography/references.bib"
+      bibtex-completion-library-path "~/agcloud/bibliography/bibtex-pdfs"
+      bibtex-completion-notes-path "~/agcloud/bibliography/bibtex-notes")
+
+(straight-use-package 'org)
+(require 'org-protocol)
+
+(setq indent-tabs-mode nil)
+(setq org-src-preserve-indentation nil)
+
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c c") 'org-capture)
 (add-to-list 'org-src-lang-modes '("latex-macros" . latex))
 
 (defvar org-babel-default-header-args:latex-macros
@@ -79,38 +75,44 @@
     (:exports . "results")))
 (defun org-babel-execute:inline-js (body _params)
   (format "<script type=\"text/javascript\">\n%s\n</script>" body))
-(use-package org-roam
-  :straight t
-  :init
-  (setq org-roam-v2-ack t
-	org-roam-directory (concat
-			    (file-name-as-directory agcloud-dir) "org-roam/")
-	)
+(setq org-roam-v2-ack t)
+  (straight-use-package 'org-roam)
+  (require 'org-roam-protocol)
 
 
-  :bind (("C-c n i" . org-roam-node-insert)
-	 ("C-c n f" . org-roam-node-find)
-	 ("C-c n l" . 'org-roam-buffer-toggle)
-	 ("C-c n d" . 'org-roam-capture-today))
-  :after (org)
+  (unless (executable-find "sqlite3")
+    (add-to-list 'exec-path "path/to/sqlite3") ; TODO REPLACE WITH VARIABLES
+    )
 
-  :config
-  (setq org-roam-db-location (concat org-roam-directory "org-roam.db"))
-  (org-roam-setup))
+  (setq org-roam-directory "~/agcloud/org-roam/") ; TODO REPLACE WITH VARIABLE
+  (unless (file-directory-p org-roam-directory)
+    (make-directory org-roam-directory)
+    )
 
-(use-package org-ref
-  :straight t
-  :config
-  (setq bib-dir (concat (file-name-as-directory agcloud-dir) "bibliography/")
-	reftex-default-bibliography (concat (file-name-as-directory bib-dir) "references.bib")
-	org-ref-bibliography-notes (concat (file-name-as-directory bib-dir) "notes.org")
-	org-ref-pdf-directory (concat (file-name-as-directory bib-dir) "bibtex-pdfs/")
-	org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f")
-	bibtex-completion-pdf-open-function 'org-open-file)
-  )
-(use-package org-noter
-  :straight t
-  )
+  (with-eval-after-load 'org
+  (progn
+    (setq org-roam-v2-ack t) ;; acknowledge upgrade and remove warning at startup
+    (setq org-roam-db-location
+	  (concat org-roam-directory "org-roam.db"))
+    (org-roam-setup)
+
+  (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
+  (global-set-key (kbd "C-c n f") 'org-roam-node-find)
+  (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
+  (global-set-key (kbd "C-c n d") 'org-roam-capture-today)
+
+  ))
+(straight-use-package 'org-ref)
+(setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
+
+(setq reftex-default-bibliography '("~/agcloud/bibliography/references.bib"))
+
+(setq org-ref-bibliography-notes "~/agcloud/bibliography/notes.org"
+      org-ref-default-bibliography '("~/agcloud/bibliography/references.bib")
+      org-ref-pdf-directory "~/agcloud/bibliography/bibtex-pdfs/")
+t
+(setq bibtex-completion-pdf-open-function 'org-open-file)
+(straight-use-package 'org-noter)
 (setq org-capture-templates
       '(
 	("t" "Todo" entry (file+headline "~/agcloud/org/inbox.org" "Inbox")
@@ -145,26 +147,28 @@
 (setq org-refile-targets '(("~/agcloud/org/gtd.org" :maxlevel . 3)
 			    ("~/agcloud/org/someday.org" :level . 1)
 			    ("~/agcloud/org/tickler.org" :maxlevel . 2)))
-(use-package org-fc
-  :straight (:type git
-		   :repo "https://git.sr.ht/~l3kn/org-fc"
-		   :files (:defaults "awk" "demo.org")
-		   )
-  )
+(straight-use-package 'hydra)
+
+(straight-use-package
+ '(org-fc
+   :type git :repo "https://git.sr.ht/~l3kn/org-fc"
+   :files (:defaults "awk" "demo.org")
+   :custom (org-fc-directories '("~/org/"))))
+
+(require 'org-fc-hydra)
 (straight-use-package 'org-roam-bibtex)
 (add-hook 'org-roam-mode-hook #'org-roam-bibtex-mode)
-(use-package org-download
-  :straight t
-  :hook (dired-mode-hook . org-download-enable)
+(straight-use-package 'org-download)
+(add-hook 'dired-mode-hook 'org-download-enable)
+(unless (eq system-type 'cygwin)
+  (straight-use-package 'ob-ipython)
+  (require 'ob-ipython)
   )
-
-(use-package ob-ipython
-  :straight t
-  )
-(use-package ob-scad
-  :straight (:type git :host github :repo "wose/ob-scad"))
-(use-package ob-async
-  :straight t)
+(straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
+(require 'ob-scad)
+(straight-use-package 'ob-async)
+(require 'ob-async)
+;;(setq ob-async-no-async-languages-alist '("ipython"))
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
@@ -172,6 +176,7 @@
    (scad . t)
    (shell . t)
    ))
+
 
 (menu-bar-mode -1)
 (tool-bar-mode -1) 
@@ -185,68 +190,51 @@
 (load-file custom-file)
 
 
-(use-package yasnippet
-  :straight t
-  :config
-  (yas-global-mode 1)
-  )
+(straight-use-package 'yasnippet)
+(straight-use-package 'yasnippet-snippets)
 
-(use-package yasnippet-snippets
-  :straight t)
+(yas-global-mode 1)
 
 (straight-use-package 'weyland-yutani-theme)
 (load-theme `weyland-yutani t)
 
-(use-package pdf-tools
-  :straight t
-  :config
-  (pdf-tools-install))
+(straight-use-package 'pdf-tools)
+(pdf-tools-install)
 
-(use-package magit
-  :straight t)
+(straight-use-package 'magit)
 
-(use-package crux
-  :straight t)
+(straight-use-package 'crux)
 
-(use-package super-save
-  :straight t
-  :config
-  (super-save-mode +1)
-  (setq auto-save-default nil
-	super-save-exclude '(".gpg")
-	super-save-remote-files nil)
-  (add-to-list 'super-save-hook-triggers 'find-file-hook))
+(straight-use-package 'super-save)
+  
+(super-save-mode +1)
+  
+(setq auto-save-default nil)
+  
+(setq super-save-exclude '(".gpg"))
+  
+(setq super-save-remote-files nil)
+  
+(add-to-list 'super-save-hook-triggers 'find-file-hook)
 
-(use-package flyspell
-  :straight t
-  :config
-  (setq ispell-program-name "aspell"
-	ispell-extra-args '("--sug-mode=ultra"))
-  )
+(require 'flyspell)
+(setq ispell-program-name "aspell" ; use aspell instead of ispell
+      ispell-extra-args '("--sug-mode=ultra"))
 
-(use-package flycheck
-  :straight t
-  :config
-  (global-flycheck-mode 1)
-  )
+(straight-use-package 'flycheck)
+(straight-use-package 'flycheck-rust)
+(add-hook 'after-init-hook #'global-flycheck-mode)
 
-(use-package company
-  :straight t
-  :config (global-company-mode 1)
-  )
+(straight-use-package 'company)
+(add-hook 'after-init-hook 'global-company-mode)
 
-(use-package nov
-  :straight t
-  :config
-  (setq nov-text-width 80)
-  :mode "\\.epub\\'")
+(straight-use-package 'nov)
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+(setq nov-text-width 80)
 
-(use-package elpy
-  :straight t
-  :init
-  (setq elpy-rpc-python-command "python3")
-  :config
-  (elpy-enable))
+(straight-use-package 'elpy)
+(setq elpy-rpc-python-command "python3")
+(elpy-enable)
 
 ;; store all backup and autosave files in the tmp dir
 (setq backup-directory-alist
@@ -254,10 +242,5 @@
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
 
-(use-package bbdb
-  :straight t)
-
-(use-package helm-bbdb
-  :straight t
-  :after (helm bbdb)
-  )
+(straight-use-package 'bbdb)
+(straight-use-package 'helm-bbdb)
