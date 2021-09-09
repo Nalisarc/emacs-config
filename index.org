@@ -3,10 +3,17 @@
 #+Email: nalisarc@gmail.com
 #+STARTUP: overview
 
+
+* TODO Useful Constants
+
+* TODO Refactor working modules to use use-package + straight
 * Straight
-  :PROPERTIES:
-  :header-args: :noweb-ref straight
-  :END:
+
+ Straight is a package manager that aims to be an inplace replacement for package.el
+The main advantage of which is the ability to easily specify the place to install the package from.
+
+We install straight with:
+#+name: straight
 #+BEGIN_SRC elisp
   (defvar bootstrap-version)
   (let ((bootstrap-file
@@ -21,6 +28,19 @@
 	(eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
 #+END_SRC
+
+* Use Package
+  :PROPERTIES:
+  :header-args: :noweb-ref use-package
+  :END:
+After straight is installed we can have it install use-package which will greatly simplify configuration.
+#+begin_src elisp
+  (straight-use-package 'use-package)
+  (straight-use-package 'use-package-hydra)
+#+end_src
+
+#+RESULTS:
+: t
 
 * Helm
   :PROPERTIES:
@@ -74,7 +94,6 @@
   (straight-use-package 'bbdb)
   (straight-use-package 'helm-bbdb)
 #+end_src
-
 
 * Org
   :PROPERTIES:
@@ -296,7 +315,6 @@ t
 
 #+RESULTS:
 
-
 * Yasnippet
   :PROPERTIES:
   :header-args: :noweb-ref yasnippet
@@ -429,7 +447,6 @@ Better save utility from prelude without prelude
   (setq nov-text-width 80)
 #+end_src
 
-
 * Elpy
 :PROPERTIES:
 :header-args: :noweb-ref elpy
@@ -456,14 +473,11 @@ Install elpy using:
 
 * Main
   
-#+name: early-init.el 
-#+BEGIN_SRC elisp :tangle early-init.el :noweb yes 
-(setq package-enable-at-startup nil)
-#+END_SRC
-
 #+name: init.el
 #+BEGIN_SRC elisp :tangle init.el :noweb yes
   <<straight>>
+  
+  <<use-package>>
   
   <<dashboard>>
   

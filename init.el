@@ -11,6 +11,9 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(straight-use-package 'use-package)
+(straight-use-package 'use-package-hydra)
+
 (straight-use-package 'dashboard)
 (require 'dashboard)
 (dashboard-setup-startup-hook)
