@@ -170,26 +170,27 @@ After straight is installed we can have it install use-package which will greatl
     (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
     (global-set-key (kbd "C-c n f") 'org-roam-node-find)
     (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
-    (global-set-key (kbd "C-c n d") 'org-roam-capture-today)
+    (global-set-key (kbd "C-c n d") 'org-roam-dailies-capture-today)
   
     ))
 #+END_SRC
 
 #+RESULTS:
-: org-roam-capture-today
+: org-roam-dailies-capture-today
 
 ** Ref
 #+BEGIN_SRC elisp
-(straight-use-package 'org-ref)
-(setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
-
-(setq reftex-default-bibliography '("~/agcloud/bibliography/references.bib"))
-
-(setq org-ref-bibliography-notes "~/agcloud/bibliography/notes.org"
-      org-ref-default-bibliography '("~/agcloud/bibliography/references.bib")
-      org-ref-pdf-directory "~/agcloud/bibliography/bibtex-pdfs/")
-t
-(setq bibtex-completion-pdf-open-function 'org-open-file)
+  (straight-use-package 'org-ref)
+  (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
+  
+  (setq reftex-default-bibliography '("~/agcloud/bibliography/references.bib"))
+  
+  (setq org-ref-bibliography-notes "~/agcloud/bibliography/notes.org"
+	org-ref-default-bibliography '("~/agcloud/bibliography/references.bib")
+	org-ref-pdf-directory "~/agcloud/bibliography/bibtex-pdfs/")
+  t
+  (setq bibtex-completion-pdf-open-function 'org-open-file)
+  (require 'org-ref)
 #+END_SRC
 
 ** Noter

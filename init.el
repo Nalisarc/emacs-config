@@ -99,7 +99,7 @@
   (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
   (global-set-key (kbd "C-c n f") 'org-roam-node-find)
   (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
-  (global-set-key (kbd "C-c n d") 'org-roam-capture-today)
+  (global-set-key (kbd "C-c n d") 'org-roam-dailies-capture-today)
 
   ))
 (straight-use-package 'org-ref)
@@ -112,6 +112,7 @@
       org-ref-pdf-directory "~/agcloud/bibliography/bibtex-pdfs/")
 t
 (setq bibtex-completion-pdf-open-function 'org-open-file)
+(require 'org-ref)
 (straight-use-package 'org-noter)
 (setq org-capture-templates
       '(
