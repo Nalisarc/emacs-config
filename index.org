@@ -1,10 +1,17 @@
 #+Title: Emacs Customization and Setup
-#+Author: Δelta A Bates-Smith
+#+Author: Δelta A Sharp
 #+Email: nalisarc@gmail.com
 #+STARTUP: overview
 
 
 * TODO Useful Constants
+#+name: constants
+#+begin_src elisp
+(setq agcloud "~/agcloud")
+(setq org-dir "~/agcloud/org")
+(setq notes-dir "~/agcloud/org-roam")
+(setq sqlite3-path "")
+#+end_src
 
 * TODO Refactor working modules to use use-package + straight
 * Straight
@@ -105,7 +112,7 @@ After straight is installed we can have it install use-package which will greatl
   (require 'org-protocol)
   
   (setq indent-tabs-mode nil)
-  (setq org-src-preserve-indentation nil)
+  (setq org-src-preserve-indentation t)
   
   (global-set-key (kbd "C-c l") 'org-store-link)
   (global-set-key (kbd "C-c a") 'org-agenda)
@@ -149,29 +156,30 @@ After straight is installed we can have it install use-package which will greatl
   (setq org-roam-v2-ack t)
     (straight-use-package 'org-roam)
     (require 'org-roam-protocol)
-  
-  
+
+
     (unless (executable-find "sqlite3")
-      (add-to-list 'exec-path "path/to/sqlite3") ; TODO REPLACE WITH VARIABLES
+      (add-to-list 'exec-path sqlite3-path) ; TODO REPLACE WITH VARIABLES
       )
-  
-    (setq org-roam-directory "~/agcloud/org-roam/") ; TODO REPLACE WITH VARIABLE
+
+    (setq org-roam-directory notes-dir) ; TODO REPLACE WITH VARIABLE
     (unless (file-directory-p org-roam-directory)
       (make-directory org-roam-directory)
       )
-  
+
     (with-eval-after-load 'org
     (progn
       (setq org-roam-v2-ack t) ;; acknowledge upgrade and remove warning at startup
       (setq org-roam-db-location
 	    (concat org-roam-directory "org-roam.db"))
       (org-roam-setup)
-  
+
     (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
     (global-set-key (kbd "C-c n f") 'org-roam-node-find)
     (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
     (global-set-key (kbd "C-c n d") 'org-roam-dailies-capture-today)
-  
+    (global-set-key (kbd "C-c n r") 'org-roam-node-random)
+
     ))
 #+END_SRC
 
@@ -182,15 +190,18 @@ After straight is installed we can have it install use-package which will greatl
 #+BEGIN_SRC elisp
   (straight-use-package 'org-ref)
   (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
-  
+
   (setq reftex-default-bibliography '("~/agcloud/bibliography/references.bib"))
-  
+
   (setq org-ref-bibliography-notes "~/agcloud/bibliography/notes.org"
 	org-ref-default-bibliography '("~/agcloud/bibliography/references.bib")
 	org-ref-pdf-directory "~/agcloud/bibliography/bibtex-pdfs/")
-  t
   (setq bibtex-completion-pdf-open-function 'org-open-file)
+
   (require 'org-ref)
+  (require 'org-ref-helm)
+
+  (define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link-hydra/body)
 #+END_SRC
 
 ** Noter
@@ -202,9 +213,9 @@ After straight is installed we can have it install use-package which will greatl
 #+begin_src elisp
   (setq org-capture-templates
 	'(
-	  ("t" "Todo" entry (file+headline "~/agcloud/org/inbox.org" "Inbox")
+	  ("t" "Todo" entry (file+headline (concat org-dir "inbox.org") "Inbox")
 	   "* TODO %?\n ")
-	  ("e" "Entry" entry(file+headline "~/agcloud/org/inbox.org" "Inbox")
+	  ("e" "Entry" entry(file+headline (concat org-dir "inbox.org") "Inbox")
 	   "* %?\n ")
 	  ))
 #+end_src
@@ -247,18 +258,15 @@ After straight is installed we can have it install use-package which will greatl
 			       ("~/agcloud/org/tickler.org" :maxlevel . 2)))
 #+end_src
 
-#+RESULTS:
-: ((~/agcloud/org/gtd.org :maxlevel . 3) (~/agcloud/org/someday.org :level . 1) (~/agcloud/org/tickler.org :maxlevel . 2))
-
 ** TODO Flash Cards
 #+BEGIN_SRC emacs-lisp
-  (straight-use-package 'hydra)
+  
   
   (straight-use-package
    '(org-fc
      :type git :repo "https://git.sr.ht/~l3kn/org-fc"
      :files (:defaults "awk" "demo.org")
-     :custom (org-fc-directories '("~/org/"))))
+     :custom (org-fc-directories '(notes-dir))))
   
   (require 'org-fc-hydra)
 #+END_SRC
@@ -445,7 +453,7 @@ Better save utility from prelude without prelude
 #+begin_src elisp
   (straight-use-package 'nov)
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-  (setq nov-text-width 80)
+  (setq nov-text-width 90)
 #+end_src
 
 * Elpy
@@ -476,49 +484,51 @@ Install elpy using:
   
 #+name: init.el
 #+BEGIN_SRC elisp :tangle init.el :noweb yes
-  <<straight>>
+<<straight>>
+
+<<constants>>  
+
+<<use-package>>
+
+<<dashboard>>
   
-  <<use-package>>
+<<y-n-p>>
   
-  <<dashboard>>
+<<helm>>
   
-  <<y-n-p>>
+<<helm-bibtex>>
   
-  <<helm>>
+<<org>>
   
-  <<helm-bibtex>>
+<<disable-toolbar>>
   
-  <<org>>
+<<custom-file>>
   
-  <<disable-toolbar>>
+<<yasnippet>>
   
-  <<custom-file>>
+<<theme>>
   
-  <<yasnippet>>
+<<pdf-tools>>
   
-  <<theme>>
+<<magit>>
   
-  <<pdf-tools>>
+<<crux>>
   
-  <<magit>>
+<<super-save>>
   
-  <<crux>>
+<<flyspell>>
   
-  <<super-save>>
+<<flycheck>>
   
-  <<flyspell>>
+<<company>>
   
-  <<flycheck>>
+<<nov>>
+
+<<elpy>>
   
-  <<company>>
+<<set-backup-dir>>
   
-  <<nov>>
-  
-  <<elpy>>
-  
-  <<set-backup-dir>>
-  
-  <<bbdb>>
+<<bbdb>>
 #+END_SRC
 
 #+RESULTS: init.el
