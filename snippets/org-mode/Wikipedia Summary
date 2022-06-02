@@ -1,0 +1,8 @@
+# key: wiki
+# name: Wikipedia Summary
+# --
+* [[id:551b676d-e750-4ad4-a394-75cb291f1935][Wikipedia]]
+
+#+begin_src ipython :session roam-sandbox :results verbatim raw replace :var QUERY="$0"
+wikipedia.summary(QUERY)
+#+end_src

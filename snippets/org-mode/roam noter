@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: roam noter
+# key: rnoter
+# --
+
+* $0
+:PROPERTIES:
+:NOTER_DOCUMENT: 
+:END:

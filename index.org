@@ -3,14 +3,19 @@
 #+Email: nalisarc@gmail.com
 #+STARTUP: overview
 
-
-* TODO Useful Constants
+* Readme
+* Useful Constants
 #+name: constants
 #+begin_src elisp
 (setq agcloud "~/agcloud")
 (setq org-dir "~/agcloud/org")
 (setq notes-dir "~/agcloud/org-roam")
 (setq sqlite3-path "")
+(setq books-dir "~/agcloud/Books")
+(setq bib-dir "~/agcloud/bibliography")
+(setq scimax-dir "~/.emacs.d/scimax")
+
+;; (concat (file-name-as-directory dirfile) relfile) 
 #+end_src
 
 * TODO Refactor working modules to use use-package + straight
@@ -22,18 +27,18 @@ The main advantage of which is the ability to easily specify the place to instal
 We install straight with:
 #+name: straight
 #+BEGIN_SRC elisp
-  (defvar bootstrap-version)
-  (let ((bootstrap-file
-	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-	(bootstrap-version 5))
-    (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-	  (url-retrieve-synchronously
-	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-	   'silent 'inhibit-cookies)
-	(goto-char (point-max))
-	(eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage))
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+	(url-retrieve-synchronously
+	 "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+	 'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 #+END_SRC
 
 * Use Package
@@ -42,8 +47,8 @@ We install straight with:
   :END:
 After straight is installed we can have it install use-package which will greatly simplify configuration.
 #+begin_src elisp
-  (straight-use-package 'use-package)
-  (straight-use-package 'use-package-hydra)
+(straight-use-package 'use-package)
+(straight-use-package 'use-package-hydra)
 #+end_src
 
 #+RESULTS:
@@ -54,31 +59,31 @@ After straight is installed we can have it install use-package which will greatl
   :header-args: :noweb-ref helm
   :END:
 #+BEGIN_SRC elisp
-  (straight-use-package 'helm)
-  (helm-mode 1)
-  (global-set-key (kbd "C-c h") 'helm-command-prefix)
-  (global-unset-key (kbd "C-x c"))
+(straight-use-package 'helm)
+(helm-mode 1)
+(global-set-key (kbd "C-c h") 'helm-command-prefix)
+(global-unset-key (kbd "C-x c"))
 
-  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
-  (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-  (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
+(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+(define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
 
-  (global-set-key (kbd "M-x") #'helm-M-x)
-  (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
-  (global-set-key (kbd "C-x C-f") #'helm-find-files)
-  (global-set-key (kbd "C-x b") 'helm-mini)
-  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-  (global-set-key (kbd "C-c h o") 'helm-occur)
+(global-set-key (kbd "M-x") #'helm-M-x)
+(global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
+(global-set-key (kbd "C-x C-f") #'helm-find-files)
+(global-set-key (kbd "C-x b") 'helm-mini)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+(global-set-key (kbd "C-c h o") 'helm-occur)
 #+END_SRC
 
 * Helm Bibtex
 #+name: helm-bibtex
 #+BEGIN_SRC elisp
-  (straight-use-package 'helm-bibtex)
+(straight-use-package 'helm-bibtex)
 
-  (setq bibtex-completion-bibliography "~/agcloud/bibliography/references.bib"
-	bibtex-completion-library-path "~/agcloud/bibliography/bibtex-pdfs"
-	bibtex-completion-notes-path "~/agcloud/bibliography/bibtex-notes")
+(setq bibtex-completion-bibliography  (concat (file-name-as-directory bib-dir) "references.bib")
+      bibtex-completion-library-path books-dir
+      bibtex-completion-notes-path notes-dir)
 #+END_SRC
 
 * Dashboard
@@ -87,9 +92,9 @@ After straight is installed we can have it install use-package which will greatl
 :END:
 
 #+begin_src elisp
-  (straight-use-package 'dashboard)
-  (require 'dashboard)
-  (dashboard-setup-startup-hook)
+(straight-use-package 'dashboard)
+(require 'dashboard)
+(dashboard-setup-startup-hook)
 #+end_src
 
 * BBDB
@@ -98,81 +103,80 @@ After straight is installed we can have it install use-package which will greatl
 :END:
 
 #+begin_src elisp
-  (straight-use-package 'bbdb)
-  (straight-use-package 'helm-bbdb)
+(straight-use-package 'bbdb)
+(straight-use-package 'helm-bbdb)
 #+end_src
 
 * Org
-  :PROPERTIES:
-  :header-args: :noweb-ref org
-  :END:
+:PROPERTIES:
+:header-args: :noweb-ref org
+:END:
 
 #+BEGIN_SRC elisp
-  (straight-use-package 'org)
-  (require 'org-protocol)
-  
-  (setq indent-tabs-mode nil)
-  (setq org-src-preserve-indentation t)
-  
-  (global-set-key (kbd "C-c l") 'org-store-link)
-  (global-set-key (kbd "C-c a") 'org-agenda)
-  (global-set-key (kbd "C-c c") 'org-capture)
+(straight-use-package 'org)
+(require 'org-protocol)
+
+(setq indent-tabs-mode nil)
+(setq org-src-preserve-indentation t)
+
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c c") 'org-capture)
 #+END_SRC
 
 ** Latex macro
 #+begin_src elisp
-  (add-to-list 'org-src-lang-modes '("latex-macros" . latex))
-  
-  (defvar org-babel-default-header-args:latex-macros
-    '((:results . "raw")
-      (:exports . "results")))
-  
-  (defun prefix-all-lines (pre body)
-    (with-temp-buffer
-      (insert body)
-      (string-insert-rectangle (point-min) (point-max) pre)
-      (buffer-string)))
-  
-  (defun org-babel-execute:latex-macros (body _params)
-    (concat
-     (prefix-all-lines "#+LATEX_HEADER: " body)
-     "\n#+HTML_HEAD_EXTRA: <div style=\"display: none\"> \\(\n"
-     (prefix-all-lines "#+HTML_HEAD_EXTRA: " body)
-     "\n#+HTML_HEAD_EXTRA: \\)</div>\n"))
+(add-to-list 'org-src-lang-modes '("latex-macros" . latex))
+
+(defvar org-babel-default-header-args:latex-macros
+  '((:results . "raw")
+    (:exports . "results")))
+
+(defun prefix-all-lines (pre body)
+  (with-temp-buffer
+    (insert body)
+    (string-insert-rectangle (point-min) (point-max) pre)
+    (buffer-string)))
+
+(defun org-babel-execute:latex-macros (body _params)
+  (concat
+   (prefix-all-lines "#+LATEX_HEADER: " body)
+   "\n#+HTML_HEAD_EXTRA: <div style=\"display: none\"> \\(\n"
+   (prefix-all-lines "#+HTML_HEAD_EXTRA: " body)
+   "\n#+HTML_HEAD_EXTRA: \\)</div>\n"))
 #+end_src
 
 ** inline Javascript
 #+begin_src elisp
-  (add-to-list 'org-src-lang-modes '("inline-js" . javascript))
-  (defvar org-babel-default-header-args:inline-js
-    '((:results . "html")
-      (:exports . "results")))
-  (defun org-babel-execute:inline-js (body _params)
-    (format "<script type=\"text/javascript\">\n%s\n</script>" body))
+(add-to-list 'org-src-lang-modes '("inline-js" . javascript))
+(defvar org-babel-default-header-args:inline-js
+  '((:results . "html")
+    (:exports . "results")))
+(defun org-babel-execute:inline-js (body _params)
+  (format "<script type=\"text/javascript\">\n%s\n</script>" body))
 #+end_src
 
 ** Roam
 #+BEGIN_SRC elisp
-  (setq org-roam-v2-ack t)
-    (straight-use-package 'org-roam)
-    (require 'org-roam-protocol)
+(straight-use-package 'org-roam)
+(require 'org-roam-protocol)
 
 
-    (unless (executable-find "sqlite3")
-      (add-to-list 'exec-path sqlite3-path) ; TODO REPLACE WITH VARIABLES
-      )
+(unless (executable-find "sqlite3")
+  (add-to-list 'exec-path sqlite3-path)
+  )
 
-    (setq org-roam-directory notes-dir) ; TODO REPLACE WITH VARIABLE
-    (unless (file-directory-p org-roam-directory)
-      (make-directory org-roam-directory)
-      )
+(setq org-roam-directory notes-dir) 
+(unless (file-directory-p org-roam-directory)
+  (make-directory org-roam-directory)
+  )
 
-    (with-eval-after-load 'org
-    (progn
-      (setq org-roam-v2-ack t) ;; acknowledge upgrade and remove warning at startup
-      (setq org-roam-db-location
-	    (concat org-roam-directory "org-roam.db"))
-      (org-roam-setup)
+(with-eval-after-load 'org
+  (progn
+    (setq org-roam-v2-ack t) ;; acknowledge upgrade and remove warning at startup
+    (setq org-roam-db-location
+	(concat  (file-name-as-directory org-roam-directory) "org-roam.db"))
+    (org-roam-setup)
 
     (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
     (global-set-key (kbd "C-c n f") 'org-roam-node-find)
@@ -188,20 +192,20 @@ After straight is installed we can have it install use-package which will greatl
 
 ** Ref
 #+BEGIN_SRC elisp
-  (straight-use-package 'org-ref)
-  (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
+(straight-use-package 'org-ref)
+(setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
 
-  (setq reftex-default-bibliography '("~/agcloud/bibliography/references.bib"))
+(setq reftex-default-bibliography '((concat (file-name-as-directory bib-dir) "references.bib")))
 
-  (setq org-ref-bibliography-notes "~/agcloud/bibliography/notes.org"
-	org-ref-default-bibliography '("~/agcloud/bibliography/references.bib")
-	org-ref-pdf-directory "~/agcloud/bibliography/bibtex-pdfs/")
-  (setq bibtex-completion-pdf-open-function 'org-open-file)
+(setq org-ref-bibliography-notes  '(concat (file-name-as-directory notes-dir) "index.org")
+      org-ref-default-bibliography ' (concat (file-name-as-directory bib-dir) "references.bib") 
+      org-ref-pdf-directory books-dir)
+(setq bibtex-completion-pdf-open-function 'org-open-file)
 
-  (require 'org-ref)
-  (require 'org-ref-helm)
+(require 'org-ref)
+(require 'org-ref-helm)
 
-  (define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link-hydra/body)
+(define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link-hydra/body)
 #+END_SRC
 
 ** Noter
@@ -211,41 +215,41 @@ After straight is installed we can have it install use-package which will greatl
 
 ** Capture
 #+begin_src elisp
-  (setq org-capture-templates
-	'(
-	  ("t" "Todo" entry (file+headline (concat org-dir "inbox.org") "Inbox")
-	   "* TODO %?\n ")
-	  ("e" "Entry" entry(file+headline (concat org-dir "inbox.org") "Inbox")
-	   "* %?\n ")
-	  ))
+(setq org-capture-templates
+      '(
+	("t" "Todo" entry (file+headline (concat org-dir "inbox.org") "Inbox")
+	 "* TODO %?\n ")
+	("e" "Entry" entry(file+headline (concat org-dir "inbox.org") "Inbox")
+	 "* %?\n ")
+	))
 #+end_src
 
 ** TODO Agenda
 #+begin_src elisp
-  (setq org-agenda-files '("~/agcloud/org/inbox.org"
-			     "~/agcloud/org/gtd.org"
-			     "~/agcloud/org/tickler.org"))
-  
-  (setq org-agenda-custom-commands 
-	'(("o" "At the office" tags-todo "@office"
-	   ((org-agenda-overriding-header "Office")
-	    (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
-  
-  (defun my-org-agenda-skip-all-siblings-but-first ()
-    "Skip all but the first non-done entry."
-    (let (should-skip-entry)
-      (unless (org-current-is-todo)
-	(setq should-skip-entry t))
-      (save-excursion
-	(while (and (not should-skip-entry) (org-goto-sibling t))
-	  (when (org-current-is-todo)
-	    (setq should-skip-entry t))))
-      (when should-skip-entry
-	(or (outline-next-heading)
-	    (goto-char (point-max))))))
-  
-  (defun org-current-is-todo ()
-    (string= "TODO" (org-get-todo-state)))
+(setq org-agenda-files '((concat (file-name-as-directory org-dir) "gtd.org")
+			 (concat (file-name-as-directory org-dir) "tickler.org")
+			 (concat (file-name-as-directory org-dir) "index.org")))
+
+(setq org-agenda-custom-commands 
+      '(("o" "At the office" tags-todo "@office"
+	 ((org-agenda-overriding-header "Office")
+	  (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
+
+(defun my-org-agenda-skip-all-siblings-but-first ()
+  "Skip all but the first non-done entry."
+  (let (should-skip-entry)
+    (unless (org-current-is-todo)
+      (setq should-skip-entry t))
+    (save-excursion
+      (while (and (not should-skip-entry) (org-goto-sibling t))
+	(when (org-current-is-todo)
+	  (setq should-skip-entry t))))
+    (when should-skip-entry
+      (or (outline-next-heading)
+	  (goto-char (point-max))))))
+
+(defun org-current-is-todo ()
+  (string= "TODO" (org-get-todo-state)))
 #+end_src
 
 #+RESULTS:
@@ -253,22 +257,20 @@ After straight is installed we can have it install use-package which will greatl
 
 ** Refile
 #+begin_src elisp
-   (setq org-refile-targets '(("~/agcloud/org/gtd.org" :maxlevel . 3)
-			       ("~/agcloud/org/someday.org" :level . 1)
-			       ("~/agcloud/org/tickler.org" :maxlevel . 2)))
+(setq org-refile-targets '(((concat (file-name-as-directory dirfile) "gtd.org") :maxlevel . 3)
+			   ((concat (file-name-as-directory dirfile) "someday.org") :level . 1)
+			   ((concat (file-name-as-directory dirfile) "tickler.org") :maxlevel . 2)))
 #+end_src
 
-** TODO Flash Cards
+** Flash Cards
 #+BEGIN_SRC emacs-lisp
-  
-  
-  (straight-use-package
-   '(org-fc
-     :type git :repo "https://git.sr.ht/~l3kn/org-fc"
-     :files (:defaults "awk" "demo.org")
-     :custom (org-fc-directories '(notes-dir))))
-  
-  (require 'org-fc-hydra)
+(straight-use-package
+ '(org-fc
+   :type git :repo "https://git.sr.ht/~l3kn/org-fc"
+   :files (:defaults "awk" "demo.org")
+   :custom (org-fc-directories '(notes-dir))))
+
+(require 'org-fc-hydra)
 #+END_SRC
 
 ** roam-bibtex
@@ -277,7 +279,7 @@ After straight is installed we can have it install use-package which will greatl
 (add-hook 'org-roam-mode-hook #'org-roam-bibtex-mode)
 #+END_SRC
 
-** TODO Org-Download
+** Org-Download
 #+BEGIN_SRC emacs-lisp
 (straight-use-package 'org-download)
 (add-hook 'dired-mode-hook 'org-download-enable)
@@ -285,278 +287,22 @@ After straight is installed we can have it install use-package which will greatl
 
 ** ob-ipython
 #+begin_src elisp
-  (unless (eq system-type 'cygwin)
-    (straight-use-package 'ob-ipython)
-    (require 'ob-ipython)
-    )
+(straight-use-package 'ob-ipython)
 #+end_src
 
-#+RESULTS:
-: ob-ipython
-I fought ob-ipython all day yesterday trying to get it to set up.
-As far as I can tell, ob-ipython can't talk to jupyter if it's newer than a certain version.
 
-adding in a requirements.txt file for jupyter should solve this:
-#+name: jupyter-req
-#+begin_example 
-alabaster==0.7.12
-altgraph==0.17.2
-anyio==3.4.0
-appdirs==1.4.4
-apt-xapian-index==0.49
-argcomplete==1.10.3
-argon2-cffi==20.1.0
-asgiref==3.4.1
-attrs==21.2.0
-autopep8==1.5.5
-Babel==2.9.1
-backcall==0.2.0
-backports.entry-points-selectable==1.1.0
-beautifulsoup4==4.8.2
-black==21.7b0
-bleach==4.0.0
-blinker==1.4
-certifi==2020.6.20
-cffi==1.14.6
-chardet==3.0.4
-click==7.1.2
-colorama==0.4.4
-command-not-found==0.3
-commonmark==0.9.1
-compressed-rtf==1.0.6
-cryptography==3.3.2
-cupshelpers==1.0
-cycler==0.10.0
-dbus-python==1.2.16
-debugpy==1.4.1
-decorator==5.0.9
-defusedxml==0.7.1
-distlib==0.3.2
-distro==1.5.0
-distro-info==1.0
-Django==3.2.7
-dnspython==2.1.0
-docutils==0.17.1
-docx2txt==0.8
-ebcdic==1.1.1
-email-validator==1.1.3
-entrypoints==0.3
-extract-msg==0.28.7
-fastapi==0.70.1
-fbs @ file:///home/d/agcloud/fbs_pro-1.0.8.tar.gz
-filelock==3.0.12
-flake8==3.9.2
-gpg===1.14.0-unknown
-h11==0.12.0
-html5lib==1.1
-httplib2==0.18.1
-httptools==0.2.0
-idna==2.10
-imagesize==1.2.0
-IMAPClient==2.1.0
-img2pdf==0.4.0
-iniconfig==1.1.1
-ipykernel==6.2.0
-ipython==7.26.0
-ipython-genutils==0.2.0
-ipywidgets==7.6.3
-itsdangerous==2.0.1
-jedi==0.18.0
-jeepney==0.6.0
-Jinja2==3.0.1
-joblib==1.1.0
-jsonschema==3.2.0
-jupyter==1.0.0
-jupyter-client==7.0.1
-jupyter-console==6.4.0
-jupyter-core==4.7.1
-jupyterlab-pygments==0.1.2
-jupyterlab-widgets==1.0.0
-keyring==22.2.0
-kiwisolver==1.3.1
-language-selector==0.1
-launchpadlib==1.10.13
-lazr.restfulclient==0.14.2
-lazr.uri==1.0.5
-lxml==4.6.3
-MarkupSafe==2.0.1
-matplotlib==3.4.3
-matplotlib-inline==0.1.2
-mccabe==0.6.1
-mistune==0.8.4
-mpmath==1.2.1
-mypy-extensions==0.4.3
-nbclient==0.5.4
-nbconvert==6.1.0
-nbformat==5.1.3
-nest-asyncio==1.5.1
-netifaces==0.10.9
-nose==1.3.7
-notebook==6.4.3
-numpy==1.21.2
-oauthlib==3.1.0
-olefile==0.46
-orjson==3.6.5
-packaging==21.0
-pandas==1.3.5
-pandocfilters==1.4.3
-parso==0.8.2
-pathspec==0.9.0
-pdfminer.six==20191110
-pep8==1.7.1
-pexpect==4.8.0
-pickleshare==0.7.5
-pikepdf==1.17.3+dfsg
-Pillow==8.1.2
-pipenv==2021.5.29
-pipx==0.16.4
-platformdirs==2.2.0
-pluggy==0.13.1
-prometheus-client==0.11.0
-prompt-toolkit==3.0.20
-psutil==5.9.0
-ptyprocess==0.7.0
-py==1.10.0
-PyAudio==0.2.11
-pycairo==1.16.2
-pycodestyle==2.7.0
-pycparser==2.20
-pycryptodome==3.14.1
-pycups==2.0.1
-pydantic==1.8.2
-pyflakes==2.3.1
-pygame==2.0.2
-Pygments==2.10.0
-PyGObject==3.38.0
-pyinstaller==4.7
-pyinstaller-hooks-contrib==2021.3
-PyJWT==1.7.1
-PyMuPDF==1.17.4
-pyparsing==2.4.7
-PyPDF2==1.26.0
-PyQt5==5.15.4
-pyqt5-plugins==5.15.4.2.2
-PyQt5-sip==12.8.1
-pyqt5-tools==5.15.4.3.2
-pyrsistent==0.18.0
-PySide6==6.3.0
-PySide6-Addons==6.3.0
-PySide6-Essentials==6.3.0
-pyte==0.8.0
-pytest==6.2.4
-python-apt===2.2.0-ubuntu0.21.04.1
-python-dateutil==2.8.2
-python-debian==0.1.39
-python-dotenv==0.19.2
-python-multipart==0.0.5
-python-pptx==0.6.21
-pyttsx3==2.90
-pytz==2021.1
-pytz-deprecation-shim==0.1.0.post0
-PyYAML==5.3.1
-pyzmq==22.2.1
-qt5-applications==5.15.2.2.2
-qt5-tools==5.15.2.1.2
-qtconsole==5.1.1
-QtPy==1.10.0
-regex==2021.8.21
-reportlab==3.5.66
-requests==2.25.1
-rich==12.0.1
-rubber==1.5.1
-scikit-learn==1.0.1
-scipy==1.7.1
-seaborn==0.11.2
-SecretStorage==3.3.1
-Send2Trash==1.8.0
-shiboken6==6.3.0
-simplejson==3.17.2
-six==1.12.0
-sklearn==0.0
-sniffio==1.2.0
-snowballstemmer==2.1.0
-sortedcontainers==2.4.0
-soupsieve==2.2
-SpeechRecognition==3.8.1
-Sphinx==4.2.0
-sphinxcontrib-applehelp==1.0.2
-sphinxcontrib-devhelp==1.0.2
-sphinxcontrib-htmlhelp==2.0.0
-sphinxcontrib-jsmath==1.0.1
-sphinxcontrib-qthelp==1.0.3
-sphinxcontrib-serializinghtml==1.1.5
-sqlparse==0.4.2
-starlette==0.16.0
-sympy==1.8
-systemd-python==234
-terminado==0.11.1
-testpath==0.5.0
-textract==1.6.5
-thefuck==3.32
-threadpoolctl==3.0.0
-tika==1.24
-toml==0.10.2
-tomli==1.2.1
-tornado==6.1
-traitlets==5.0.5
-typed-ast==1.4.2
-typing-extensions==3.7.4.3
-tzdata==2022.1
-tzlocal==4.1
-ubuntu-advantage-tools==27.5
-ubuntu-drivers-common==0.0.0
-ufw==0.36
-ujson==4.3.0
-unattended-upgrades==0.1
-urllib3==1.26.2
-usb-creator==0.3.7
-userpath==1.7.0
-uvicorn==0.15.0
-uvloop==0.16.0
-virtualenv==20.7.2
-virtualenv-clone==0.5.6
-vosk==0.3.30
-wadllib==1.3.5
-watchgod==0.7
-wcwidth==0.2.5
-webencodings==0.5.1
-websockets==10.1
-widgetsnbextension==3.5.1
-xkit==0.0.0
-xlrd==1.2.0
-XlsxWriter==3.0.3
-yapf==0.30.0
-youtube-dl==2021.6.6
-#+end_example
-
-This is my jupyter versions specifically:
-#+begin_example
-jupyter core     : 4.7.1
-jupyter-notebook : 6.4.3
-qtconsole        : 5.1.1
-ipython          : 7.26.0
-ipykernel        : 6.2.0
-jupyter client   : 7.0.1
-jupyter lab      : not installed
-nbconvert        : 6.1.0
-ipywidgets       : 7.6.3
-nbformat         : 5.1.3
-traitlets        : 5.0.5
-#+end_example
-
-I suspect that core needs to be set specifically.
 
 ** ob-scad
 #+begin_src elisp
-    (straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
-    (require 'ob-scad)
+(straight-use-package '(ob-scad :type git :host github :repo "wose/ob-scad"))
+(require 'ob-scad)
 #+end_src
 
 ** ob-async
 #+begin_src elisp
-    (straight-use-package 'ob-async)
-    (require 'ob-async)
-    ;;(setq ob-async-no-async-languages-alist '("ipython"))
+(straight-use-package 'ob-async)
+(require 'ob-async)
+;;(setq ob-async-no-async-languages-alist '("ipython"))
 #+end_src
 
 #+RESULTS:
@@ -564,17 +310,27 @@ I suspect that core needs to be set specifically.
 
 ** load all babel languages
 #+begin_src elisp
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (ipython . t)
-     (scad . t)
-     (shell . t)
-     ))
-  
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (ipython . t)
+   (scad . t)
+   (shell . t)
+   ))
+
 #+end_src
 
 #+RESULTS:
+
+** ox-twee2
+#+name: twee2
+#+begin_src elisp
+(require 'ox-md)
+(require 'ox-twee2)
+#+end_src
+
+#+RESULTS: twee2
+: ox-twee2
 
 * Yasnippet
   :PROPERTIES:
@@ -703,9 +459,13 @@ Better save utility from prelude without prelude
 :END:
 
 #+begin_src elisp
-  (straight-use-package 'nov)
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-  (setq nov-text-width 90)
+(straight-use-package 'nov)
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+(setq nov-text-width 90)
+(defun my-nov-font-setup ()
+  (face-remap-add-relative 'variable-pitch :family "OpenDyslexic"
+                                           :height 1.0))
+(add-hook 'nov-mode-hook 'my-nov-font-setup)
 #+end_src
 
 * Elpy
@@ -715,9 +475,20 @@ Better save utility from prelude without prelude
 
 Install elpy using:
 #+begin_src elisp
-  (straight-use-package 'elpy)
-  (setq elpy-rpc-python-command "python3")
-  (elpy-enable)
+(straight-use-package 'elpy)
+
+(setq elpy-rpc-python-command "python3")
+
+(elpy-enable)
+
+(setq python-shell-interpreter "ipython"
+      python-shell-interpreter-args "--pylab=osx --pdb --nosep --classic"
+      python-shell-prompt-regexp ">>> "
+      python-shell-prompt-output-regexp ""
+      python-shell-completion-setup-code "from IPython.core.completerlib import module_completion"
+      python-shell-completion-module-string-code "';'.join(module_completion('''%s'''))\n"
+      python-shell-completion-string-code "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
+
 #+end_src
 
 #+RESULTS:
@@ -725,11 +496,17 @@ Install elpy using:
 * Save backups in one place
 #+name: set-backup-dir
 #+begin_src elisp
-  ;; store all backup and autosave files in the tmp dir
-  (setq backup-directory-alist
-	`((".*" . ,temporary-file-directory)))
-  (setq auto-save-file-name-transforms
-	`((".*" ,temporary-file-directory t)))
+;; store all backup and autosave files in the tmp dir
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+#+end_src
+
+* speedreader
+#+name: speedreader
+#+begin_src emacs-lisp
+(straight-use-package 'speedread)
 #+end_src
 
 * Main
@@ -738,7 +515,9 @@ Install elpy using:
 #+BEGIN_SRC elisp :tangle init.el :noweb yes
 <<straight>>
 
-<<constants>>  
+<<constants>>
+
+(add-to-list 'load-path scimax-dir)
 
 <<use-package>>
 
@@ -781,6 +560,8 @@ Install elpy using:
 <<set-backup-dir>>
   
 <<bbdb>>
+
+<<speedreader>>
 #+END_SRC
 
 #+RESULTS: init.el

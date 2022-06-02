@@ -3,6 +3,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("c619eb0438190484d57c051efd4cd541df20d9c47bed5c4c54e819f664006066" default))
  '(org-agenda-files
    '("/home/d/agcloud/org/inbox.org" "/home/d/agcloud/org/gtd.org" "/home/d/agcloud/org/tickler.org"))
  '(org-babel-python-command "python3")
