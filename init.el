@@ -18,6 +18,7 @@
 (setq books-dir "~/agcloud/Books")
 (setq bib-dir "~/agcloud/bibliography")
 (setq scimax-dir "~/.emacs.d/scimax")
+(setq contacts "~/agcloud/bbdb")
 
 ;; (concat (file-name-as-directory dirfile) relfile) 
 
@@ -26,27 +27,69 @@
 (straight-use-package 'use-package)
 (straight-use-package 'use-package-hydra)
 
-(straight-use-package 'dashboard)
-(require 'dashboard)
-(dashboard-setup-startup-hook)
+(use-package dashboard
+  :straight t
+  :ensure t
+
+  :init
+  (setq dashboard-banner-logo-title "Emacs")
+  (setq dashboard-startup-banner 'logo)
+  (setq dashboard-center-content t)
+
+  :config
+  (dashboard-setup-startup-hook)
+  (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+
+  )
   
 (defalias 'yes-or-no-p 'y-or-n-p)
   
-(straight-use-package 'helm)
-(helm-mode 1)
-(global-set-key (kbd "C-c h") 'helm-command-prefix)
-(global-unset-key (kbd "C-x c"))
+  ;;(straight-use-package 'helm)
+  ;;(helm-mode 1)
+  ;;(global-set-key (kbd "C-c h") 'helm-command-prefix)
+  ;;(global-unset-key (kbd "C-x c"))
+  ;;
+  ;;(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
+  ;;(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+  ;;(define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+  ;;
+  ;;(global-set-key (kbd "M-x") #'helm-M-x)
+  ;;(global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
+  ;;(global-set-key (kbd "C-x C-f") #'helm-find-files)
+  ;;(global-set-key (kbd "C-x b") 'helm-mini)
+  ;;(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  ;;(global-set-key (kbd "C-c h o") 'helm-occur)
 
-(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
-(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-(define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
 
-(global-set-key (kbd "M-x") #'helm-M-x)
-(global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
-(global-set-key (kbd "C-x C-f") #'helm-find-files)
-(global-set-key (kbd "C-x b") 'helm-mini)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-(global-set-key (kbd "C-c h o") 'helm-occur)
+  (use-package helm
+    :straight t
+    :init
+    (global-unset-key (kbd "C-x c"))
+		    
+    :config
+    (helm-mode 1)
+  
+		    
+
+    :bind (
+	   ("M-x" . helm-M-x)
+	   ("C-x r b" . helm-filtered-bookmarks)
+	   ("C-x C-f" . helm-find-files)
+	   ("C-x b". helm-mini)
+	   ("M-y" . helm-show-kill-ring)
+	   ("C-c h o" . helm-occur)
+	   :map helm-command-map
+	   ("C-c h" . helm-command-prefix)
+	   ("<tab>" . helm-execute-persistent-action)
+	   ("C-i" . helm-execute-persistent-action)
+	   ("C-z" . helm-select-action)
+	   )
+    )
+(straight-use-package 'helm-bibtex)
+
+(setq bibtex-completion-bibliography  (concat (file-name-as-directory bib-dir) "references.bib")
+      bibtex-completion-library-path books-dir
+      bibtex-completion-notes-path notes-dir)
   
 (straight-use-package 'helm-bibtex)
 
@@ -54,66 +97,79 @@
       bibtex-completion-library-path books-dir
       bibtex-completion-notes-path notes-dir)
   
-(straight-use-package 'org)
-(require 'org-protocol)
+;(straight-use-package 'org)
+;(require 'org-protocol)
 
-(setq indent-tabs-mode nil)
-(setq org-src-preserve-indentation t)
+;(setq indent-tabs-mode nil)
+;(setq org-src-preserve-indentation t)
 
-(global-set-key (kbd "C-c l") 'org-store-link)
-(global-set-key (kbd "C-c a") 'org-agenda)
-(global-set-key (kbd "C-c c") 'org-capture)
-(add-to-list 'org-src-lang-modes '("latex-macros" . latex))
+;(global-set-key (kbd "C-c l") 'org-store-link)
+;(global-set-key (kbd "C-c a") 'org-agenda)
+;(global-set-key (kbd "C-c c") 'org-capture)
 
-(defvar org-babel-default-header-args:latex-macros
-  '((:results . "raw")
-    (:exports . "results")))
+(use-package org
+  :straight t
 
-(defun prefix-all-lines (pre body)
-  (with-temp-buffer
-    (insert body)
-    (string-insert-rectangle (point-min) (point-max) pre)
-    (buffer-string)))
+  :bind (("C-c l" . org-store-link)
+	 ("C-c a" . org-agenda)
+	 ("C-c c" . org-capture)
+	 )
+  :init
+  (setq indent-tabs-mode nil)
+  (setq org-src-preserve-indentation t)
+  :config
+  (require 'org-protocol)
 
-(defun org-babel-execute:latex-macros (body _params)
-  (concat
-   (prefix-all-lines "#+LATEX_HEADER: " body)
-   "\n#+HTML_HEAD_EXTRA: <div style=\"display: none\"> \\(\n"
-   (prefix-all-lines "#+HTML_HEAD_EXTRA: " body)
-   "\n#+HTML_HEAD_EXTRA: \\)</div>\n"))
-(add-to-list 'org-src-lang-modes '("inline-js" . javascript))
-(defvar org-babel-default-header-args:inline-js
-  '((:results . "html")
-    (:exports . "results")))
-(defun org-babel-execute:inline-js (body _params)
-  (format "<script type=\"text/javascript\">\n%s\n</script>" body))
-(straight-use-package 'org-roam)
-(require 'org-roam-protocol)
-
-
-(unless (executable-find "sqlite3")
-  (add-to-list 'exec-path sqlite3-path)
   )
+;(straight-use-package 'org-roam)
+;(require 'org-roam-protocol)
 
-(setq org-roam-directory notes-dir) 
-(unless (file-directory-p org-roam-directory)
-  (make-directory org-roam-directory)
+;(unless (executable-find "sqlite3")
+;  (add-to-list 'exec-path sqlite3-path)
+;  )
+
+;(setq org-roam-directory notes-dir) 
+;(unless (file-directory-p org-roam-directory)
+;  (make-directory org-roam-directory)
+;  )
+
+;(with-eval-after-load 'org
+;  (progn
+;    (setq org-roam-v2-ack t) ;; acknowledge upgrade and remove warning at start;up
+;    (setq org-roam-db-location
+;	(concat  (file-name-as-directory org-roam-directory) "org-roam.db"))
+;    (org-roam-setup)
+;
+;    (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
+;    (global-set-key (kbd "C-c n f") 'org-roam-node-find)
+;    (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
+;    (global-set-key (kbd "C-c n d") 'org-roam-dailies-capture-today)
+;    (global-set-key (kbd "C-c n r") 'org-roam-node-random)
+;
+;    ))
+(use-package org-roam
+  :straight t
+  :init
+  (setq org-roam-v2-ack t)
+  :config
+  (require 'org-roam-protocol)
+  (org-roam-setup)
+  :bind
+  ("C-c n i" . org-roam-node-insert)
+  ("C-c n f" . org-roam-node-find)
+  ("C-c n l" . org-roam-buffer-toggle)
+  ("C-c n d" . org-roam-dailies-capture-today)
+  ("C-c n r" . org-roam-node-random)
+
   )
+;(straight-use-package 'org-roam-bibtex)
+;(add-hook 'org-roam-mode-hook #'org-roam-bibtex-mode)
 
-(with-eval-after-load 'org
-  (progn
-    (setq org-roam-v2-ack t) ;; acknowledge upgrade and remove warning at startup
-    (setq org-roam-db-location
-	(concat  (file-name-as-directory org-roam-directory) "org-roam.db"))
-    (org-roam-setup)
-
-    (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
-    (global-set-key (kbd "C-c n f") 'org-roam-node-find)
-    (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
-    (global-set-key (kbd "C-c n d") 'org-roam-dailies-capture-today)
-    (global-set-key (kbd "C-c n r") 'org-roam-node-random)
-
-    ))
+(use-package org-roam-bibtex
+  :straight t
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  
+  )
 (straight-use-package 'org-ref)
 (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
 
@@ -129,6 +185,13 @@
 
 (define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link-hydra/body)
 (straight-use-package 'org-noter)
+(straight-use-package
+ '(org-fc
+   :type git :repo "https://git.sr.ht/~l3kn/org-fc"
+   :files (:defaults "awk" "demo.org")
+   :custom (org-fc-directories '(notes-dir))))
+
+(require 'org-fc-hydra)
 (setq org-capture-templates
       '(
 	("t" "Todo" entry (file+headline (concat org-dir "inbox.org") "Inbox")
@@ -163,15 +226,6 @@
 (setq org-refile-targets '(((concat (file-name-as-directory dirfile) "gtd.org") :maxlevel . 3)
 			   ((concat (file-name-as-directory dirfile) "someday.org") :level . 1)
 			   ((concat (file-name-as-directory dirfile) "tickler.org") :maxlevel . 2)))
-(straight-use-package
- '(org-fc
-   :type git :repo "https://git.sr.ht/~l3kn/org-fc"
-   :files (:defaults "awk" "demo.org")
-   :custom (org-fc-directories '(notes-dir))))
-
-(require 'org-fc-hydra)
-(straight-use-package 'org-roam-bibtex)
-(add-hook 'org-roam-mode-hook #'org-roam-bibtex-mode)
 (straight-use-package 'org-download)
 (add-hook 'dired-mode-hook 'org-download-enable)
 (straight-use-package 'ob-ipython)
@@ -180,6 +234,8 @@
 (straight-use-package 'ob-async)
 (require 'ob-async)
 ;;(setq ob-async-no-async-languages-alist '("ipython"))
+(require 'ox-md)
+(require 'ox-twee2)
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
@@ -188,8 +244,6 @@
    (shell . t)
    ))
 
-(require 'ox-md)
-(require 'ox-twee2)
   
 (menu-bar-mode -1)
 (tool-bar-mode -1) 
@@ -270,7 +324,17 @@
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
   
-(straight-use-package 'bbdb)
-(straight-use-package 'helm-bbdb)
+;;(straight-use-package 'bbdb)
+;;(straight-use-package 'helm-bbdb)
+
+(use-package bbdb
+  :straight t
+  :init
+  (setq bbdb-file contacts)
+  :config
+  (bbdb-initialize))
+(use-package helm-bbdb
+  :straight t
+  )
 
 (straight-use-package 'speedread)
