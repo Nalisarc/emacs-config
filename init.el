@@ -170,20 +170,45 @@
   :hook (org-roam-mode . org-roam-bibtex-mode)
   
   )
-(straight-use-package 'org-ref)
-(setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
+;(straight-use-package 'org-ref)
+;(setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
+
+;(setq reftex-default-bibliography '((concat (file-name-as-directory bib-dir) "references.bib")))
+
+;(setq org-ref-bibliography-notes  '(concat (file-name-as-directory notes-dir) "index.org")
+;      org-ref-default-bibliography ' (concat (file-name-as-directory bib-dir) "references.bib") 
+;      org-ref-pdf-directory books-dir)
+;(setq bibtex-completion-pdf-open-function 'org-open-file)
+
+;(require 'org-ref)
+;(require 'org-ref-helm)
+
+;;(define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link-hydra/body)
+
+(use-package org-ref
+:straight t
+:init
+(require 'org-ref-helm)
+(require 'bibtex)
 
 (setq reftex-default-bibliography '((concat (file-name-as-directory bib-dir) "references.bib")))
+(setq bibtex-autokey-year-length 4
+      bibtex-autokey-name-year-separator "-"
+      bibtex-autokey-year-title-separator "-"
+      bibtex-autokey-titleword-separator "-"
+      bibtex-autokey-titlewords 2
+      bibtex-autokey-titlewords-stretch 1
+      bibtex-autokey-titleword-length 5)
 
+:config
 (setq org-ref-bibliography-notes  '(concat (file-name-as-directory notes-dir) "index.org")
       org-ref-default-bibliography ' (concat (file-name-as-directory bib-dir) "references.bib") 
       org-ref-pdf-directory books-dir)
-(setq bibtex-completion-pdf-open-function 'org-open-file)
+:bind
+("C-c r" . org-ref-bibtex-hydra/body)
 
-(require 'org-ref)
-(require 'org-ref-helm)
 
-(define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link-hydra/body)
+)
 (straight-use-package 'org-noter)
 (straight-use-package
  '(org-fc
