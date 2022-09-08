@@ -1,0 +1,985 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-09-02 Fri 15:56 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Emacs Customizations</title>
+<meta name="author" content="Δelta Alexander Sharp" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Emacs Customizations</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orged41f14">1. Install Straight and Use-Package</a></li>
+<li><a href="#org0385957">2. Org</a></li>
+<li><a href="#org5bad7ab">3. Org Roam</a></li>
+<li><a href="#org2e55192">4. Helm</a></li>
+<li><a href="#org8e97da5">5. Theme</a></li>
+<li><a href="#org3e3e269">6. Dashboard</a></li>
+<li><a href="#org2aa76c8">7. Edit Server</a></li>
+<li><a href="#orga10f891">8. Exec-path-from-shell</a></li>
+<li><a href="#org16bc97b">9. PDF Tools</a></li>
+<li><a href="#org8fc6606">10. Nov</a></li>
+<li><a href="#org0fee8fb">11. Disable Toolbar</a></li>
+<li><a href="#org2ec636e">12. Org Noter</a></li>
+<li><a href="#org1f8fdc0">13. Magit</a></li>
+<li><a href="#org1882e12">14. Ob-ipython</a></li>
+<li><a href="#org28942b1">15. Org-ref</a></li>
+<li><a href="#orgc5ae308">16. Org-Flashcards</a></li>
+<li><a href="#orgef95254">17. Org-Download</a></li>
+<li><a href="#orgaf818c8">18. deft</a></li>
+<li><a href="#orgceb292c">19. Elpy</a></li>
+<li><a href="#orge37783a">20. EAF</a></li>
+<li><a href="#org104ad21">21. Main</a></li>
+<li><a href="#org58a86f0">22. References</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-orged41f14" class="outline-2">
+<h2 id="orged41f14"><span class="section-number-2">1.</span> Install Straight and Use-Package</h2>
+<div class="outline-text-2" id="text-1">
+<div class="org-src-container">
+<pre class="src src-elisp" id="org5bbca5a"><span style="color: #6F7181;">;; </span><span style="color: #6F7181;">Install straight.el</span>
+(<span style="color: #66D9EF;">defvar</span> <span style="color: #5FCA81;">bootstrap-version</span>)
+(<span style="color: #66D9EF;">let</span> ((bootstrap-file
+       (expand-file-name <span style="color: #C1CAFF;">"straight/repos/straight.el/bootstrap.el"</span> user-emacs-directory))
+      (bootstrap-version 5))
+  (<span style="color: #66D9EF;">unless</span> (file-exists-p bootstrap-file)
+    (<span style="color: #66D9EF;">with-current-buffer</span>
+        (url-retrieve-synchronously
+         <span style="color: #C1CAFF;">"https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"</span>
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+<span style="color: #6F7181;">;; </span><span style="color: #6F7181;">Install use-package</span>
+(straight-use-package 'use-package)
+
+<span style="color: #6F7181;">;; </span><span style="color: #6F7181;">Configure use-package to use straight.el by default</span>
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">straight</span>
+  <span style="color: #BB98FC;">:custom</span> (straight-use-package-by-default t))
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">use-package-ensure-system-package</span>
+  <span style="color: #BB98FC;">:ensure</span> t)
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">use-package-chords</span>
+  <span style="color: #BB98FC;">:ensure</span> t
+  <span style="color: #BB98FC;">:config</span> (key-chord-mode 1))
+
+
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-elisp" id="orgca35ce0"><span style="color: #6F7181;">;; </span><span style="color: #6F7181;">Disable package.el in favor of straight.el</span>
+(<span style="color: #66D9EF;">setq</span> package-enable-at-startup nil)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0385957" class="outline-2">
+<h2 id="org0385957"><span class="section-number-2">2.</span> Org</h2>
+<div class="outline-text-2" id="text-2">
+<div class="org-src-container">
+<pre class="src src-elisp" id="org11953be">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">org</span>
+  <span style="color: #BB98FC;">:demand</span> t
+  <span style="color: #BB98FC;">:ensure</span> t
+  
+  <span style="color: #BB98FC;">:bind</span> ((<span style="color: #C1CAFF;">"C-c l"</span> . org-store-link)
+         (<span style="color: #C1CAFF;">"C-c a"</span> . org-agenda)
+         (<span style="color: #C1CAFF;">"C-c c"</span> . org-capture)
+         )
+  
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">org-protocol</span>)
+  (<span style="color: #66D9EF;">setq</span> indent-tabs-mode nil)
+  (<span style="color: #66D9EF;">setq</span> org-src-preserve-indentation t)
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">ob-org</span>)
+  )
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5bad7ab" class="outline-2">
+<h2 id="org5bad7ab"><span class="section-number-2">3.</span> Org Roam</h2>
+<div class="outline-text-2" id="text-3">
+<div class="org-src-container">
+<pre class="src src-elisp" id="org016aaaa">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">org-roam</span>
+  <span style="color: #BB98FC;">:after</span> org
+  <span style="color: #BB98FC;">:init</span>
+  (<span style="color: #66D9EF;">setq</span> org-roam-v2-ack t)
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">org-roam-protocol</span>)
+  (org-roam-setup)
+  <span style="color: #BB98FC;">:bind</span>
+  (<span style="color: #C1CAFF;">"C-c n i"</span> . org-roam-node-insert)
+  (<span style="color: #C1CAFF;">"C-c n f"</span> . org-roam-node-find)
+  (<span style="color: #C1CAFF;">"C-c n l"</span> . org-roam-buffer-toggle)
+  (<span style="color: #C1CAFF;">"C-c n d"</span> . org-roam-dailies-capture-today)
+  (<span style="color: #C1CAFF;">"C-c n r"</span> . org-roam-node-random)
+  )
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2e55192" class="outline-2">
+<h2 id="org2e55192"><span class="section-number-2">4.</span> Helm</h2>
+<div class="outline-text-2" id="text-4">
+<div class="org-src-container">
+<pre class="src src-elisp" id="org7437c66">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">helm</span>
+  <span style="color: #BB98FC;">:config</span>
+  (helm-mode 1)
+  (global-unset-key (kbd <span style="color: #C1CAFF;">"C-x c"</span>))
+  <span style="color: #BB98FC;">:bind</span>
+  (
+           (<span style="color: #C1CAFF;">"M-x"</span> . helm-M-x)
+           (<span style="color: #C1CAFF;">"C-x r b"</span> . helm-filtered-bookmarks)
+           (<span style="color: #C1CAFF;">"C-x C-f"</span> . helm-find-files)
+           (<span style="color: #C1CAFF;">"C-x b"</span>. helm-mini)
+           (<span style="color: #C1CAFF;">"M-y"</span> . helm-show-kill-ring)
+           (<span style="color: #C1CAFF;">"C-c h o"</span> . helm-occur)
+           <span style="color: #BB98FC;">:map</span> helm-command-map
+           (<span style="color: #C1CAFF;">"C-c h"</span> . helm-command-prefix)
+           (<span style="color: #C1CAFF;">"&lt;tab&gt;"</span> . helm-execute-persistent-action)
+           (<span style="color: #C1CAFF;">"C-i"</span> . helm-execute-persistent-action)
+           (<span style="color: #C1CAFF;">"C-z"</span> . helm-select-action))
+
+   )
+'
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">helm-bibtex</span>)
+  
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8e97da5" class="outline-2">
+<h2 id="org8e97da5"><span class="section-number-2">5.</span> Theme</h2>
+<div class="outline-text-2" id="text-5">
+<div class="org-src-container">
+<pre class="src src-elisp" id="org0c73fe6">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">zeno-theme</span>)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org3e3e269" class="outline-2">
+<h2 id="org3e3e269"><span class="section-number-2">6.</span> Dashboard</h2>
+<div class="outline-text-2" id="text-6">
+<div class="org-src-container">
+<pre class="src src-elisp" id="orged07378">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">dashboard</span>
+  <span style="color: #BB98FC;">:init</span>
+  (<span style="color: #66D9EF;">setq</span> dashboard-banner-logo-title <span style="color: #C1CAFF;">"Emacs"</span>)
+  (<span style="color: #66D9EF;">setq</span> dashboard-startup-banner 'logo)
+  (<span style="color: #66D9EF;">setq</span> dashboard-center-content t)
+
+  <span style="color: #BB98FC;">:config</span>
+  (dashboard-setup-startup-hook)
+  (<span style="color: #66D9EF;">setq</span> initial-buffer-choice (<span style="color: #66D9EF;">lambda</span> () (get-buffer <span style="color: #C1CAFF;">"*dashboard*"</span>)))
+  )
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2aa76c8" class="outline-2">
+<h2 id="org2aa76c8"><span class="section-number-2">7.</span> Edit Server</h2>
+<div class="outline-text-2" id="text-7">
+<div class="org-src-container">
+<pre class="src src-elisp" id="org15b9e46">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">edit-server</span>
+  <span style="color: #BB98FC;">:if</span> window-system
+  <span style="color: #BB98FC;">:init</span>
+  (add-hook 'after-init-hook 'server-start t)
+  (add-hook 'after-init-hook 'edit-server-start t))
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga10f891" class="outline-2">
+<h2 id="orga10f891"><span class="section-number-2">8.</span> Exec-path-from-shell</h2>
+<div class="outline-text-2" id="text-8">
+<div class="org-src-container">
+<pre class="src src-elisp" id="orgb8ddeff">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">exec-path-from-shell</span>
+  <span style="color: #BB98FC;">:if</span> (memq window-system '(mac ns))
+  <span style="color: #BB98FC;">:ensure</span> t
+  <span style="color: #BB98FC;">:demand</span> t
+  <span style="color: #BB98FC;">:config</span>
+  (exec-path-from-shell-initialize))
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org16bc97b" class="outline-2">
+<h2 id="org16bc97b"><span class="section-number-2">9.</span> PDF Tools</h2>
+<div class="outline-text-2" id="text-9">
+<div class="org-src-container">
+<pre class="src src-elisp" id="org787034b">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">pdf-tools</span>
+  <span style="color: #BB98FC;">:magic</span> (<span style="color: #C1CAFF;">"%PDF"</span> . pdf-view-mode)
+  <span style="color: #BB98FC;">:config</span>
+  (pdf-tools-install <span style="color: #BB98FC;">:no-query</span>))
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8fc6606" class="outline-2">
+<h2 id="org8fc6606"><span class="section-number-2">10.</span> Nov</h2>
+<div class="outline-text-2" id="text-10">
+<div class="org-src-container">
+<pre class="src src-elisp">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">nov</span>
+  <span style="color: #BB98FC;">:magic</span> (<span style="color: #C1CAFF;">"%EPUB"</span> . pdf-view-mode)
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">setq</span> nov-text-width 90)
+  (<span style="color: #66D9EF;">defun</span> <span style="color: #84B5FF;">my-nov-font-setup</span> ()
+    (face-remap-add-relative 'variable-pitch <span style="color: #BB98FC;">:family</span> <span style="color: #C1CAFF;">"OpenDyslexic"</span>
+                             <span style="color: #BB98FC;">:height</span> 1.0))
+  (add-hook 'nov-mode-hook 'my-nov-font-setup)
+  )
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0fee8fb" class="outline-2">
+<h2 id="org0fee8fb"><span class="section-number-2">11.</span> Disable Toolbar</h2>
+<div class="outline-text-2" id="text-11">
+<div class="org-src-container">
+<pre class="src src-elisp" id="org79fcd53">(menu-bar-mode -1)
+(tool-bar-mode -1) 
+(toggle-scroll-bar -1) 
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2ec636e" class="outline-2">
+<h2 id="org2ec636e"><span class="section-number-2">12.</span> Org Noter</h2>
+<div class="outline-text-2" id="text-12">
+<div class="org-src-container">
+<pre class="src src-elisp" id="orgaa663d9">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">org-noter</span>
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">setq</span> org-noter-doc-property-in-notes t)
+  )
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1f8fdc0" class="outline-2">
+<h2 id="org1f8fdc0"><span class="section-number-2">13.</span> Magit</h2>
+<div class="outline-text-2" id="text-13">
+<div class="org-src-container">
+<pre class="src src-elisp" id="orgd046d3e">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">magit</span>
+  <span style="color: #BB98FC;">:ensure</span> t)
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org1882e12" class="outline-2">
+<h2 id="org1882e12"><span class="section-number-2">14.</span> Ob-ipython</h2>
+<div class="outline-text-2" id="text-14">
+<div class="org-src-container">
+<pre class="src src-elisp" id="org343f211">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">ob-ipython</span>
+  <span style="color: #BB98FC;">:after</span> (<span style="color: #BB98FC;">:all</span> org elpy python)
+)
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org28942b1" class="outline-2">
+<h2 id="org28942b1"><span class="section-number-2">15.</span> Org-ref</h2>
+<div class="outline-text-2" id="text-15">
+<div class="org-src-container">
+<pre class="src src-elisp" id="orge64aa19">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">org-ref</span>
+  <span style="color: #BB98FC;">:straight</span> (org-ref <span style="color: #BB98FC;">:type</span> git <span style="color: #BB98FC;">:host</span> github <span style="color: #BB98FC;">:repo</span> <span style="color: #C1CAFF;">"jkitchin/org-ref"</span>)
+  <span style="color: #BB98FC;">:after</span> (org)
+  <span style="color: #BB98FC;">:init</span>
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">bibtex</span>)
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">hydra</span>)
+
+  (<span style="color: #66D9EF;">setq</span> reftex-default-bibliography <span style="color: #C1CAFF;">"~/agcloud/org-roam/references.bib"</span>)
+  (<span style="color: #66D9EF;">setq</span> bibtex-autokey-year-length 4
+      bibtex-autokey-name-year-separator <span style="color: #C1CAFF;">"-"</span>
+      bibtex-autokey-year-title-separator <span style="color: #C1CAFF;">"-"</span>
+      bibtex-autokey-titleword-separator <span style="color: #C1CAFF;">"-"</span>
+      bibtex-autokey-titlewords 2
+      bibtex-autokey-titlewords-stretch 1
+      bibtex-autokey-titleword-length 5)
+
+<span style="color: #BB98FC;">:config</span>
+(<span style="color: #66D9EF;">setq</span> org-ref-bibliography-notes  <span style="color: #C1CAFF;">"~/agcloud/org-roam/index.org"</span>
+      org-ref-default-bibliography <span style="color: #C1CAFF;">"~/agcloud/org-roam/references.bib"</span>
+      org-ref-pdf-directory <span style="color: #C1CAFF;">"~/agcloud/Books"</span>)
+
+(<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">org-ref-helm</span>)
+
+<span style="color: #BB98FC;">:bind</span>
+(<span style="color: #C1CAFF;">"C-c r"</span> . org-ref-bibtex-hydra/body)
+)
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgc5ae308" class="outline-2">
+<h2 id="orgc5ae308"><span class="section-number-2">16.</span> Org-Flashcards</h2>
+<div class="outline-text-2" id="text-16">
+<div class="org-src-container">
+<pre class="src src-elisp" id="org54cab9f">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">org-fc</span>
+  <span style="color: #BB98FC;">:straight</span> (org-fc
+   <span style="color: #BB98FC;">:type</span> git <span style="color: #BB98FC;">:repo</span> <span style="color: #C1CAFF;">"https://git.sr.ht/~l3kn/org-fc"</span>
+   <span style="color: #BB98FC;">:files</span> (<span style="color: #BB98FC;">:defaults</span> <span style="color: #C1CAFF;">"awk"</span> <span style="color: #C1CAFF;">"demo.org"</span>)
+   <span style="color: #BB98FC;">:after</span> (org)
+   <span style="color: #BB98FC;">:custom</span> (org-fc-directories <span style="color: #C1CAFF;">"~/agcloud/org-roam"</span>)))
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgef95254" class="outline-2">
+<h2 id="orgef95254"><span class="section-number-2">17.</span> Org-Download</h2>
+<div class="outline-text-2" id="text-17">
+<div class="org-src-container">
+<pre class="src src-elisp" id="orgb6e8c7a">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">org-download</span>
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">setq</span> org-download-image-dir <span style="color: #C1CAFF;">"~/agcloud/org-roam/media/images"</span>)
+  <span style="color: #6F7181;">;; </span><span style="color: #6F7181;">Drag-and-drop to `dired`</span>
+  (add-hook 'dired-mode-hook 'org-download-enable)
+  )
+</pre>
+</div>
+
+<pre class="example">
+t
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgaf818c8" class="outline-2">
+<h2 id="orgaf818c8"><span class="section-number-2">18.</span> deft</h2>
+<div class="outline-text-2" id="text-18">
+<div class="org-src-container">
+<pre class="src src-elisp" id="orgfdf2ab2">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">deft</span>
+  <span style="color: #BB98FC;">:bind</span> (<span style="color: #C1CAFF;">"&lt;f8&gt;"</span> . deft)
+  <span style="color: #BB98FC;">:commands</span> (deft)
+  <span style="color: #BB98FC;">:config</span> (<span style="color: #66D9EF;">setq</span> deft-directory <span style="color: #C1CAFF;">"~/agcloud/org-roam"</span>
+                deft-extensions '(<span style="color: #C1CAFF;">"org"</span>)
+                deft-recursive t
+                deft-use-filename-as-title t
+                
+                ))
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgceb292c" class="outline-2">
+<h2 id="orgceb292c"><span class="section-number-2">19.</span> Elpy</h2>
+<div class="outline-text-2" id="text-19">
+<div class="org-src-container">
+<pre class="src src-elisp" id="org6399fc5">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">elpy</span>
+  <span style="color: #BB98FC;">:commands</span> elpy-enable
+  <span style="color: #BB98FC;">:init</span> (<span style="color: #66D9EF;">with-eval-after-load</span> 'python (elpy-enable))
+
+  <span style="color: #BB98FC;">:config</span>
+  (delete 'elpy-module-highlight-indentation elpy-modules)
+  (delete 'elpy-module-flymake elpy-modules)
+
+  (<span style="color: #66D9EF;">defun</span> <span style="color: #84B5FF;">ha/elpy-goto-definition</span> ()
+    (<span style="color: #66D9EF;">interactive</span>)
+    (<span style="color: #66D9EF;">condition-case</span> err
+        (elpy-goto-definition)
+      ('error (xref-find-definitions (symbol-name (symbol-at-point))))))
+
+  <span style="color: #BB98FC;">:bind</span> (<span style="color: #BB98FC;">:map</span> elpy-mode-map ([remap elpy-goto-definition] .
+                             ha/elpy-goto-definition)))
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">pyenv-mode</span>
+  <span style="color: #BB98FC;">:ensure</span> t
+  <span style="color: #BB98FC;">:after</span> (exec-path-from-shell)
+  <span style="color: #BB98FC;">:config</span>
+    (<span style="color: #66D9EF;">defun</span> <span style="color: #84B5FF;">projectile-pyenv-mode-set</span> ()
+      <span style="color: #C1CAFF;">"Set pyenv version matching project name."</span>
+      (<span style="color: #66D9EF;">let</span> ((project (projectile-project-name)))
+        (<span style="color: #66D9EF;">if</span> (member project (pyenv-mode-versions))
+            (pyenv-mode-set project)
+          (pyenv-mode-unset))))
+
+    (add-hook 'projectile-switch-project-hook 'projectile-pyenv-mode-set)
+    (add-hook 'python-mode-hook 'pyenv-mode))
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">python</span>
+  <span style="color: #BB98FC;">:mode</span> (<span style="color: #C1CAFF;">"\\.py\\'"</span> . python-mode)
+        (<span style="color: #C1CAFF;">"\\.wsgi$"</span> . python-mode)
+  <span style="color: #BB98FC;">:interpreter</span> (<span style="color: #C1CAFF;">"python"</span> . python-mode)
+
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">setq</span> python-indent-offset 4))
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">jedi</span>
+  <span style="color: #BB98FC;">:ensure</span> t
+  <span style="color: #BB98FC;">:after</span> (exec-path-from-shell)
+  <span style="color: #BB98FC;">:init</span>
+  (add-to-list 'company-backends 'company-jedi)
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">company-jedi</span>
+    <span style="color: #BB98FC;">:ensure</span> t
+    <span style="color: #BB98FC;">:init</span>
+    (add-hook 'python-mode-hook (<span style="color: #66D9EF;">lambda</span> () (add-to-list 'company-backends 'company-jedi)))
+    (<span style="color: #66D9EF;">setq</span> company-jedi-python-bin <span style="color: #C1CAFF;">"python"</span>)))
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">anaconda-mode</span>
+  <span style="color: #BB98FC;">:ensure</span> t
+  <span style="color: #BB98FC;">:after</span> (exec-path-from-shell)
+  <span style="color: #BB98FC;">:init</span> (add-hook 'python-mode-hook 'anaconda-mode)
+        (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+  <span style="color: #BB98FC;">:config</span> (<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">company-anaconda</span>
+            <span style="color: #BB98FC;">:ensure</span> t
+            <span style="color: #BB98FC;">:init</span> (add-hook 'python-mode-hook 'anaconda-mode)
+            (eval-after-load <span style="color: #C1CAFF;">"company"</span>
+              '(add-to-list 'company-backends '(company-anaconda <span style="color: #BB98FC;">:with</span> company-capf)))))
+
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge37783a" class="outline-2">
+<h2 id="orge37783a"><span class="section-number-2">20.</span> EAF</h2>
+<div class="outline-text-2" id="text-20">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp" id="orgfc10d09">(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">eaf</span>
+  <span style="color: #BB98FC;">:straight</span> nil
+  <span style="color: #BB98FC;">:load-path</span> <span style="color: #C1CAFF;">"~/.emacs.d/site-lisp/emacs-application-framework"</span>
+  <span style="color: #BB98FC;">:custom</span>
+  <span style="color: #6F7181;">; </span><span style="color: #6F7181;">See https://github.com/emacs-eaf/emacs-application-framework/wiki/Customization</span>
+  (eaf-browser-continue-where-left-off t)
+  (eaf-browser-enable-adblocker t)
+  (browse-url-browser-function 'eaf-open-browser)
+  <span style="color: #BB98FC;">:init</span>
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">eaf</span>)
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">eaf-browser</span>)
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">eaf-pdf-viewer</span>)
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">eaf-camera</span>)
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">eaf-terminal</span>)
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">defalias</span> '<span style="color: #84B5FF;">browse-web</span> #'eaf-open-browser)
+  (<span style="color: #66D9EF;">eaf-bind-key</span> scroll_up <span style="color: #C1CAFF;">"C-n"</span> eaf-pdf-viewer-keybinding)
+  (<span style="color: #66D9EF;">eaf-bind-key</span> scroll_down <span style="color: #C1CAFF;">"C-p"</span> eaf-pdf-viewer-keybinding)
+  (<span style="color: #66D9EF;">eaf-bind-key</span> take_photo <span style="color: #C1CAFF;">"p"</span> eaf-camera-keybinding)
+  (<span style="color: #66D9EF;">eaf-bind-key</span> nil <span style="color: #C1CAFF;">"M-q"</span> eaf-browser-keybinding)) <span style="color: #6F7181;">;; </span><span style="color: #6F7181;">unbind, see more in the Wiki</span>
+</pre>
+</div>
+
+<pre class="example">
+t
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org104ad21" class="outline-2">
+<h2 id="org104ad21"><span class="section-number-2">21.</span> Main</h2>
+<div class="outline-text-2" id="text-21">
+<div class="org-src-container">
+<pre class="src src-elisp"><span style="color: #6F7181;">;; </span><span style="color: #6F7181;">Install straight.el</span>
+(<span style="color: #66D9EF;">defvar</span> <span style="color: #5FCA81;">bootstrap-version</span>)
+(<span style="color: #66D9EF;">let</span> ((bootstrap-file
+       (expand-file-name <span style="color: #C1CAFF;">"straight/repos/straight.el/bootstrap.el"</span> user-emacs-directory))
+      (bootstrap-version 5))
+  (<span style="color: #66D9EF;">unless</span> (file-exists-p bootstrap-file)
+    (<span style="color: #66D9EF;">with-current-buffer</span>
+        (url-retrieve-synchronously
+         <span style="color: #C1CAFF;">"https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"</span>
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+<span style="color: #6F7181;">;; </span><span style="color: #6F7181;">Install use-package</span>
+(straight-use-package 'use-package)
+
+<span style="color: #6F7181;">;; </span><span style="color: #6F7181;">Configure use-package to use straight.el by default</span>
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">straight</span>
+  <span style="color: #BB98FC;">:custom</span> (straight-use-package-by-default t))
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">use-package-ensure-system-package</span>
+  <span style="color: #BB98FC;">:ensure</span> t)
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">use-package-chords</span>
+  <span style="color: #BB98FC;">:ensure</span> t
+  <span style="color: #BB98FC;">:config</span> (key-chord-mode 1))
+
+
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">org</span>
+  <span style="color: #BB98FC;">:demand</span> t
+  <span style="color: #BB98FC;">:ensure</span> t
+  
+  <span style="color: #BB98FC;">:bind</span> ((<span style="color: #C1CAFF;">"C-c l"</span> . org-store-link)
+         (<span style="color: #C1CAFF;">"C-c a"</span> . org-agenda)
+         (<span style="color: #C1CAFF;">"C-c c"</span> . org-capture)
+         )
+  
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">org-protocol</span>)
+  (<span style="color: #66D9EF;">setq</span> indent-tabs-mode nil)
+  (<span style="color: #66D9EF;">setq</span> org-src-preserve-indentation t)
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">ob-org</span>)
+  )
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">org-roam</span>
+  <span style="color: #BB98FC;">:after</span> org
+  <span style="color: #BB98FC;">:init</span>
+  (<span style="color: #66D9EF;">setq</span> org-roam-v2-ack t)
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">org-roam-protocol</span>)
+  (org-roam-setup)
+  <span style="color: #BB98FC;">:bind</span>
+  (<span style="color: #C1CAFF;">"C-c n i"</span> . org-roam-node-insert)
+  (<span style="color: #C1CAFF;">"C-c n f"</span> . org-roam-node-find)
+  (<span style="color: #C1CAFF;">"C-c n l"</span> . org-roam-buffer-toggle)
+  (<span style="color: #C1CAFF;">"C-c n d"</span> . org-roam-dailies-capture-today)
+  (<span style="color: #C1CAFF;">"C-c n r"</span> . org-roam-node-random)
+  )
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">org-noter</span>
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">setq</span> org-noter-doc-property-in-notes t)
+  )
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">helm</span>
+  <span style="color: #BB98FC;">:config</span>
+  (helm-mode 1)
+  (global-unset-key (kbd <span style="color: #C1CAFF;">"C-x c"</span>))
+  <span style="color: #BB98FC;">:bind</span>
+  (
+           (<span style="color: #C1CAFF;">"M-x"</span> . helm-M-x)
+           (<span style="color: #C1CAFF;">"C-x r b"</span> . helm-filtered-bookmarks)
+           (<span style="color: #C1CAFF;">"C-x C-f"</span> . helm-find-files)
+           (<span style="color: #C1CAFF;">"C-x b"</span>. helm-mini)
+           (<span style="color: #C1CAFF;">"M-y"</span> . helm-show-kill-ring)
+           (<span style="color: #C1CAFF;">"C-c h o"</span> . helm-occur)
+           <span style="color: #BB98FC;">:map</span> helm-command-map
+           (<span style="color: #C1CAFF;">"C-c h"</span> . helm-command-prefix)
+           (<span style="color: #C1CAFF;">"&lt;tab&gt;"</span> . helm-execute-persistent-action)
+           (<span style="color: #C1CAFF;">"C-i"</span> . helm-execute-persistent-action)
+           (<span style="color: #C1CAFF;">"C-z"</span> . helm-select-action))
+
+   )
+'
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">helm-bibtex</span>)
+  
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">zeno-theme</span>)
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">dashboard</span>
+  <span style="color: #BB98FC;">:init</span>
+  (<span style="color: #66D9EF;">setq</span> dashboard-banner-logo-title <span style="color: #C1CAFF;">"Emacs"</span>)
+  (<span style="color: #66D9EF;">setq</span> dashboard-startup-banner 'logo)
+  (<span style="color: #66D9EF;">setq</span> dashboard-center-content t)
+
+  <span style="color: #BB98FC;">:config</span>
+  (dashboard-setup-startup-hook)
+  (<span style="color: #66D9EF;">setq</span> initial-buffer-choice (<span style="color: #66D9EF;">lambda</span> () (get-buffer <span style="color: #C1CAFF;">"*dashboard*"</span>)))
+  )
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">exec-path-from-shell</span>
+  <span style="color: #BB98FC;">:if</span> (memq window-system '(mac ns))
+  <span style="color: #BB98FC;">:ensure</span> t
+  <span style="color: #BB98FC;">:demand</span> t
+  <span style="color: #BB98FC;">:config</span>
+  (exec-path-from-shell-initialize))
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">edit-server</span>
+  <span style="color: #BB98FC;">:if</span> window-system
+  <span style="color: #BB98FC;">:init</span>
+  (add-hook 'after-init-hook 'server-start t)
+  (add-hook 'after-init-hook 'edit-server-start t))
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">pdf-tools</span>
+  <span style="color: #BB98FC;">:magic</span> (<span style="color: #C1CAFF;">"%PDF"</span> . pdf-view-mode)
+  <span style="color: #BB98FC;">:config</span>
+  (pdf-tools-install <span style="color: #BB98FC;">:no-query</span>))
+
+
+
+(<span style="color: #66D9EF;">defalias</span> '<span style="color: #84B5FF;">yes-or-no-p</span> 'y-or-n-p) <span style="color: #6F7181;">;;</span><span style="color: #6F7181;">Ease of use</span>
+
+(menu-bar-mode -1)
+(tool-bar-mode -1) 
+(toggle-scroll-bar -1) 
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">deft</span>
+  <span style="color: #BB98FC;">:bind</span> (<span style="color: #C1CAFF;">"&lt;f8&gt;"</span> . deft)
+  <span style="color: #BB98FC;">:commands</span> (deft)
+  <span style="color: #BB98FC;">:config</span> (<span style="color: #66D9EF;">setq</span> deft-directory <span style="color: #C1CAFF;">"~/agcloud/org-roam"</span>
+                deft-extensions '(<span style="color: #C1CAFF;">"org"</span>)
+                deft-recursive t
+                deft-use-filename-as-title t
+                
+                ))
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">org-fc</span>
+  <span style="color: #BB98FC;">:straight</span> (org-fc
+   <span style="color: #BB98FC;">:type</span> git <span style="color: #BB98FC;">:repo</span> <span style="color: #C1CAFF;">"https://git.sr.ht/~l3kn/org-fc"</span>
+   <span style="color: #BB98FC;">:files</span> (<span style="color: #BB98FC;">:defaults</span> <span style="color: #C1CAFF;">"awk"</span> <span style="color: #C1CAFF;">"demo.org"</span>)
+   <span style="color: #BB98FC;">:after</span> (org)
+   <span style="color: #BB98FC;">:custom</span> (org-fc-directories <span style="color: #C1CAFF;">"~/agcloud/org-roam"</span>)))
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">org-download</span>
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">setq</span> org-download-image-dir <span style="color: #C1CAFF;">"~/agcloud/org-roam/media/images"</span>)
+  <span style="color: #6F7181;">;; </span><span style="color: #6F7181;">Drag-and-drop to `dired`</span>
+  (add-hook 'dired-mode-hook 'org-download-enable)
+  )
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">magit</span>
+  <span style="color: #BB98FC;">:ensure</span> t)
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">org-ref</span>
+  <span style="color: #BB98FC;">:straight</span> (org-ref <span style="color: #BB98FC;">:type</span> git <span style="color: #BB98FC;">:host</span> github <span style="color: #BB98FC;">:repo</span> <span style="color: #C1CAFF;">"jkitchin/org-ref"</span>)
+  <span style="color: #BB98FC;">:after</span> (org)
+  <span style="color: #BB98FC;">:init</span>
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">bibtex</span>)
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">hydra</span>)
+
+  (<span style="color: #66D9EF;">setq</span> reftex-default-bibliography <span style="color: #C1CAFF;">"~/agcloud/org-roam/references.bib"</span>)
+  (<span style="color: #66D9EF;">setq</span> bibtex-autokey-year-length 4
+      bibtex-autokey-name-year-separator <span style="color: #C1CAFF;">"-"</span>
+      bibtex-autokey-year-title-separator <span style="color: #C1CAFF;">"-"</span>
+      bibtex-autokey-titleword-separator <span style="color: #C1CAFF;">"-"</span>
+      bibtex-autokey-titlewords 2
+      bibtex-autokey-titlewords-stretch 1
+      bibtex-autokey-titleword-length 5)
+
+<span style="color: #BB98FC;">:config</span>
+(<span style="color: #66D9EF;">setq</span> org-ref-bibliography-notes  <span style="color: #C1CAFF;">"~/agcloud/org-roam/index.org"</span>
+      org-ref-default-bibliography <span style="color: #C1CAFF;">"~/agcloud/org-roam/references.bib"</span>
+      org-ref-pdf-directory <span style="color: #C1CAFF;">"~/agcloud/Books"</span>)
+
+(<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">org-ref-helm</span>)
+
+<span style="color: #BB98FC;">:bind</span>
+(<span style="color: #C1CAFF;">"C-c r"</span> . org-ref-bibtex-hydra/body)
+)
+
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">elpy</span>
+  <span style="color: #BB98FC;">:commands</span> elpy-enable
+  <span style="color: #BB98FC;">:init</span> (<span style="color: #66D9EF;">with-eval-after-load</span> 'python (elpy-enable))
+
+  <span style="color: #BB98FC;">:config</span>
+  (delete 'elpy-module-highlight-indentation elpy-modules)
+  (delete 'elpy-module-flymake elpy-modules)
+
+  (<span style="color: #66D9EF;">defun</span> <span style="color: #84B5FF;">ha/elpy-goto-definition</span> ()
+    (<span style="color: #66D9EF;">interactive</span>)
+    (<span style="color: #66D9EF;">condition-case</span> err
+        (elpy-goto-definition)
+      ('error (xref-find-definitions (symbol-name (symbol-at-point))))))
+
+  <span style="color: #BB98FC;">:bind</span> (<span style="color: #BB98FC;">:map</span> elpy-mode-map ([remap elpy-goto-definition] .
+                             ha/elpy-goto-definition)))
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">pyenv-mode</span>
+  <span style="color: #BB98FC;">:ensure</span> t
+  <span style="color: #BB98FC;">:after</span> (exec-path-from-shell)
+  <span style="color: #BB98FC;">:config</span>
+    (<span style="color: #66D9EF;">defun</span> <span style="color: #84B5FF;">projectile-pyenv-mode-set</span> ()
+      <span style="color: #C1CAFF;">"Set pyenv version matching project name."</span>
+      (<span style="color: #66D9EF;">let</span> ((project (projectile-project-name)))
+        (<span style="color: #66D9EF;">if</span> (member project (pyenv-mode-versions))
+            (pyenv-mode-set project)
+          (pyenv-mode-unset))))
+
+    (add-hook 'projectile-switch-project-hook 'projectile-pyenv-mode-set)
+    (add-hook 'python-mode-hook 'pyenv-mode))
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">python</span>
+  <span style="color: #BB98FC;">:mode</span> (<span style="color: #C1CAFF;">"\\.py\\'"</span> . python-mode)
+        (<span style="color: #C1CAFF;">"\\.wsgi$"</span> . python-mode)
+  <span style="color: #BB98FC;">:interpreter</span> (<span style="color: #C1CAFF;">"python"</span> . python-mode)
+
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">setq</span> python-indent-offset 4))
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">jedi</span>
+  <span style="color: #BB98FC;">:ensure</span> t
+  <span style="color: #BB98FC;">:after</span> (exec-path-from-shell)
+  <span style="color: #BB98FC;">:init</span>
+  (add-to-list 'company-backends 'company-jedi)
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">company-jedi</span>
+    <span style="color: #BB98FC;">:ensure</span> t
+    <span style="color: #BB98FC;">:init</span>
+    (add-hook 'python-mode-hook (<span style="color: #66D9EF;">lambda</span> () (add-to-list 'company-backends 'company-jedi)))
+    (<span style="color: #66D9EF;">setq</span> company-jedi-python-bin <span style="color: #C1CAFF;">"python"</span>)))
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">anaconda-mode</span>
+  <span style="color: #BB98FC;">:ensure</span> t
+  <span style="color: #BB98FC;">:after</span> (exec-path-from-shell)
+  <span style="color: #BB98FC;">:init</span> (add-hook 'python-mode-hook 'anaconda-mode)
+        (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+  <span style="color: #BB98FC;">:config</span> (<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">company-anaconda</span>
+            <span style="color: #BB98FC;">:ensure</span> t
+            <span style="color: #BB98FC;">:init</span> (add-hook 'python-mode-hook 'anaconda-mode)
+            (eval-after-load <span style="color: #C1CAFF;">"company"</span>
+              '(add-to-list 'company-backends '(company-anaconda <span style="color: #BB98FC;">:with</span> company-capf)))))
+
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">ob-ipython</span>
+  <span style="color: #BB98FC;">:after</span> (<span style="color: #BB98FC;">:all</span> org elpy python)
+)
+
+(<span style="color: #66D9EF;">use-package</span> <span style="color: #A6E22E;">eaf</span>
+  <span style="color: #BB98FC;">:straight</span> nil
+  <span style="color: #BB98FC;">:load-path</span> <span style="color: #C1CAFF;">"~/.emacs.d/site-lisp/emacs-application-framework"</span>
+  <span style="color: #BB98FC;">:custom</span>
+  <span style="color: #6F7181;">; </span><span style="color: #6F7181;">See https://github.com/emacs-eaf/emacs-application-framework/wiki/Customization</span>
+  (eaf-browser-continue-where-left-off t)
+  (eaf-browser-enable-adblocker t)
+  (browse-url-browser-function 'eaf-open-browser)
+  <span style="color: #BB98FC;">:init</span>
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">eaf</span>)
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">eaf-browser</span>)
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">eaf-pdf-viewer</span>)
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">eaf-camera</span>)
+  (<span style="color: #66D9EF;">require</span> '<span style="color: #A6E22E;">eaf-terminal</span>)
+  <span style="color: #BB98FC;">:config</span>
+  (<span style="color: #66D9EF;">defalias</span> '<span style="color: #84B5FF;">browse-web</span> #'eaf-open-browser)
+  (<span style="color: #66D9EF;">eaf-bind-key</span> scroll_up <span style="color: #C1CAFF;">"C-n"</span> eaf-pdf-viewer-keybinding)
+  (<span style="color: #66D9EF;">eaf-bind-key</span> scroll_down <span style="color: #C1CAFF;">"C-p"</span> eaf-pdf-viewer-keybinding)
+  (<span style="color: #66D9EF;">eaf-bind-key</span> take_photo <span style="color: #C1CAFF;">"p"</span> eaf-camera-keybinding)
+  (<span style="color: #66D9EF;">eaf-bind-key</span> nil <span style="color: #C1CAFF;">"M-q"</span> eaf-browser-keybinding)) <span style="color: #6F7181;">;; </span><span style="color: #6F7181;">unbind, see more in the Wiki</span>
+
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-ipython">print("Hello world")
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org58a86f0" class="outline-2">
+<h2 id="org58a86f0"><span class="section-number-2">22.</span> References</h2>
+<div class="outline-text-2" id="text-22">
+<p>
+<a href="https://jeffkreeftmeijer.com/emacs-straight-use-package/">https://jeffkreeftmeijer.com/emacs-straight-use-package/</a>
+<a href="https://github.com/jwiegley/use-package">https://github.com/jwiegley/use-package</a>
+<a href="https://github.com/radian-software/straight.el">https://github.com/radian-software/straight.el</a>
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Δelta Alexander Sharp</p>
+<p class="date">Created: 2022-09-02 Fri 15:56</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

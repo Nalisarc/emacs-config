@@ -48,7 +48,7 @@
 
 * Org
 #+name: org
-#+begin_src elisp
+#+begin_src elisp :noweb yes 
 (use-package org
   :demand t
   :ensure t
@@ -63,11 +63,77 @@
   (setq indent-tabs-mode nil)
   (setq org-src-preserve-indentation t)
   (require 'ob-org)
+  (require 'ob-shell)
+  (require 'ob-latex)
+  <<agenda>>
+  <<capture-temp>>
+  <<refile>>
   )
 #+end_src
 
 #+RESULTS: org
 : org-capture
+
+* Agenda
+#+name: agenda
+#+begin_src elisp
+(setq org-agenda-files '("~/agcloud/org/gtd.org"
+			 "~/agcloud/org/tickler.org"
+			 "~/agcloud/org/inbox.org"
+			 ))
+
+(setq org-agenda-custom-commands 
+      '(("o" "At the office" tags-todo "@office"
+	 ((org-agenda-overriding-header "Office")
+	  (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)
+	  ))))
+
+(defun my-org-agenda-skip-all-siblings-but-first ()
+  "Skip all but the first non-done entry."
+  (let (should-skip-entry)
+    (unless (org-current-is-todo)
+      (setq should-skip-entry t))
+    (save-excursion
+      (while (and (not should-skip-entry) (org-goto-sibling t))
+	(when (org-current-is-todo)
+	  (setq should-skip-entry t))))
+    (when should-skip-entry
+      (or (outline-next-heading)
+	  (goto-char (point-max))))))
+
+(defun org-current-is-todo ()
+  (string= "TODO" (org-get-todo-state)))
+#+end_src
+
+#+RESULTS: agenda
+| ~/agcloud/org/gtd.org | ~/agcloud/org/tickler.org | ~/agcloud/org/inbox.org |
+
+* Capture Templates
+#+name: capture-temp
+#+begin_src elisp
+(setq org-capture-templates
+      '(
+	("t" "Todo" entry (file+headline "~/agcloud/org/inbox.org" "Inbox")
+	 "* TODO %?\n ")
+	("e" "Entry" entry(file+headline "~/agcloud/org/inbox.org" "Inbox")
+	 "* %?\n ")
+	))
+#+end_src
+
+#+RESULTS: capture-temp
+| t | Todo  | entry | (file+headline ~/agcloud/org/inbox.org Inbox) | * TODO %? |
+| e | Entry | entry | (file+headline ~/agcloud/org/inbox.org Inbox) | * %?      |
+
+* Refile
+#+name: refile
+#+begin_src elisp
+(setq org-refile-targets '(("~/agcloud/org/gtd.org" :maxlevel . 3)
+			   ("~/agcloud/org/someday.org" :level . 1)
+			   ("~/agcloud/org/tickler.org" :maxlevel . 2)))
+#+end_src
+
+#+RESULTS: refile
+: ((~/agcloud/org/gtd.org :maxlevel . 3) (~/agcloud/org/someday.org :level . 1) (~/agcloud/org/tickler.org :maxlevel . 2))
 
 * Org Roam
 #+name: org-roam
@@ -391,30 +457,121 @@
 (use-package eaf
   :straight nil
   :load-path "~/.emacs.d/site-lisp/emacs-application-framework"
-  :custom
-  ; See https://github.com/emacs-eaf/emacs-application-framework/wiki/Customization
-  (eaf-browser-continue-where-left-off t)
-  (eaf-browser-enable-adblocker t)
-  (browse-url-browser-function 'eaf-open-browser)
-  :init
-  (require 'eaf)
-  (require 'eaf-browser)
-  (require 'eaf-pdf-viewer)
-  (require 'eaf-camera)
-  (require 'eaf-terminal)
-  :config
-  (defalias 'browse-web #'eaf-open-browser)
-  (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
-  (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
-  (eaf-bind-key take_photo "p" eaf-camera-keybinding)
-  (eaf-bind-key nil "M-q" eaf-browser-keybinding)) ;; unbind, see more in the Wiki
+)
 #+end_src
 
 #+RESULTS: eaf
-: t
 
 #+RESULTS:
 : t
+
+* Yasnippet
+#+name: yasnippet
+#+begin_src elisp
+(use-package yasnippet
+  :config
+  (use-package yasnippet-snippets))
+#+end_src
+
+* Flycheck
+#+name: flycheck
+#+begin_src elisp
+(use-package flycheck)
+#+end_src
+
+* Flyspell
+#+name: flycheck
+#+begin_src elisp
+(use-package flyspell
+  :config
+  (setq ispell-program-name "aspell" ; use aspell instead of ispell
+	ispell-extra-args '("--sug-mode=ultra")))
+#+end_src
+
+#+RESULTS: flycheck
+: t
+
+* BBDB
+#+name: BBDB
+#+begin_src elisp
+(use-package bbdb
+  :after (helm)
+  :config
+  (use-package helm-bbdb))
+#+end_src
+
+#+RESULTS: BBDB
+: t
+
+* Company
+#+name: company
+#+begin_src elisp
+(use-package company
+  :hook
+  (after-init . global-company-mode))
+#+end_src
+
+#+RESULTS: company
+| global-company-mode | org-persist-load-all | #[0 \300 \207 [dashboard-insert-startupify-lists] 1] | debian-ispell-set-default-dictionary | debian-ispell-set-startup-menu | x-wm-set-size-hint | server-start | edit-server-start | magit-maybe-define-global-key-bindings | magit-auto-revert-mode--init-kludge | magit-startup-asserts | magit-version | table--make-cell-map |
+
+* Crux
+#+name: crux
+#+begin_src elisp
+(use-package crux)
+#+end_src
+
+#+RESULTS: crux
+
+* Supersave
+#+name: super-save
+#+begin_src elisp
+(use-package super-save
+  :config
+  (setq auto-save-default nil)
+  (setq super-save-exclude '(".gpg"))
+  (setq super-save-remote-files nil)
+  :hook
+  (find-file super-save-hook-trigger))
+
+#+end_src
+
+#+RESULTS: supersave
+| super-save |
+
+* ob-async
+#+name: ob-async
+#+begin_src elisp
+(use-package ob-async
+  :after org
+  :config
+  (require 'ob-async)
+  )
+#+end_src
+
+#+RESULTS: ob-async
+: t
+
+* Org-music
+#+begin_src elisp
+(use-package emms
+  :config
+  (emms-all)
+  (emms-default-players))
+
+;; Org-Music Mode
+(use-package org-music
+  :straight (org-music :type git :host github :repo "debanjum/org-music")
+  :init (progn
+          (setq
+           org-music-file "~/agcloud/org-roam/Music.org"
+           org-music-media-directory "~/agcloud/Music/"
+           org-music-operating-system "linux")))
+    
+
+#+end_src
+
+#+RESULTS:
+
 
 * Main
 #+begin_src elisp :noweb yes :tangle init.el
@@ -458,15 +615,30 @@
 
 <<ob-ipython>>
 
-<<eaf>>
+<<ob-async>>
+
+<<yasnippet>>
+
+<<BBDB>>
+
+<<crux>>
+
+<<company>>
+
+<<flycheck>>
+
+<<flyspell>>
+
 #+end_src
 
 #+RESULTS:
-: t
 
 #+begin_src ipython :session :results output    
 print("Hello world")
 #+end_src
+
+#+RESULTS:
+: Hello world
 
 
 * References
