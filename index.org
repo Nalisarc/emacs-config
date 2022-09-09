@@ -470,8 +470,12 @@
 #+begin_src elisp
 (use-package yasnippet
   :config
+  (yas-global-mode)
   (use-package yasnippet-snippets))
 #+end_src
+
+#+RESULTS: yasnippet
+: t
 
 * Flycheck
 #+name: flycheck

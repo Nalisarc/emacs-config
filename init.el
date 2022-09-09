@@ -299,6 +299,7 @@
 
 (use-package yasnippet
   :config
+  (yas-global-mode)
   (use-package yasnippet-snippets))
 
 (use-package bbdb
