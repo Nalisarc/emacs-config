@@ -1,31 +1,60 @@
-#+Title: Emacs Customizations
-#+Author: Δelta Alexander Sharp
-#+email: delta@dtmlabs.org
-#+startup: content
+#+Title: Emacs Configuration
+#+Author: Delta Alexander Sharp
+#+Email: nalisarc@gmail.com
+#+STARTUP: beamer
+* Export Setting                                                   :noexport:
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+LANGUAGE:  en
+#+OPTIONS:   H:2 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:https://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+HTML_LINK_UP:
+#+HTML_LINK_HOME:
 
-* Install Straight and Use-Package
-#+name: install-straight-use-package
-#+begin_src elisp
+#+beamer_theme: EastLansing
+
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+
+
+* Bootstrap Straight and Use-package
+#+name: early-init
+#+begin_src emacs-lisp :tangle early-init.el 
+;; Disable package.el in favor of straight.el
+(setq package-enable-at-startup nil)
+#+end_src
+
+#+name: setup-straight
+#+begin_src emacs-lisp :noweb yes 
 ;; Install straight.el
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
+      (bootstrap-version 6))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
+	(url-retrieve-synchronously
+	 "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+	 'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+;; ensure correct org
+(straight-use-package 'org)
 
 ;; Install use-package
 (straight-use-package 'use-package)
 
 ;; Configure use-package to use straight.el by default
 (use-package straight
-  :custom (straight-use-package-by-default t))
+  :custom
+  (straight-use-package-by-default t))
+
+<<exec-path-from-shell>>
+
+(use-package use-package-hydra)
 
 (use-package use-package-ensure-system-package
   :ensure t)
@@ -34,30 +63,53 @@
   :ensure t
   :config (key-chord-mode 1))
 
-
+#+end_src
+* exec-path-from-shell
+#+name: exec-path-from-shell
+#+begin_src emacs-lisp
+(when (memq window-system '(mac ns x))
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize)))
 #+end_src
 
-#+RESULTS: install-straight-use-package
+#+RESULTS: exec-path-from-shell
 : t
 
-#+name: disable-package-at-startup
-#+begin_src elisp :tangle early-init.el 
-;; Disable package.el in favor of straight.el
-(setq package-enable-at-startup nil)
+* Term
+#+name: term
+#+begin_src emacs-lisp
+(use-package term
+  :bind (("C-c t" . term)
+         :map term-mode-map
+         ("M-p" . term-send-up)
+         ("M-n" . term-send-down)
+         :map term-raw-map
+         ("M-o" . other-window)
+         ("M-p" . term-send-up)
+         ("M-n" . term-send-down)))
 #+end_src
 
+#+RESULTS:
+
+* Projectile
+#+name: projectile
+#+begin_src emacs-lisp
+(use-package projectile
+  :bind-keymap
+  ("C-c p" . projectile-command-map))
+#+end_src
 * Org
 #+name: org
-#+begin_src elisp :noweb yes 
+#+begin_src emacs-lisp :noweb yes 
 (use-package org
-  :demand t
   :ensure t
-  
+
   :bind (("C-c l" . org-store-link)
 	 ("C-c a" . org-agenda)
-	 ("C-c c" . org-capture)
-	 )
-  
+	 ("C-c c" . org-capture))
+
   :config
   (require 'org-protocol)
   (setq indent-tabs-mode nil)
@@ -65,28 +117,43 @@
   (require 'ob-org)
   (require 'ob-shell)
   (require 'ob-latex)
-  <<agenda>>
-  <<capture-temp>>
-  <<refile>>
+  <<org-agenda>>
+  <<org-capture-templates>>
+  <<org-refile>>
+
   )
+
+<<org-roam>>
+
+<<org-ref>>
+
+
+
+<<org-download>>
+
+<<org-noter>>
+
+<<org-fc>>
 #+end_src
-
-#+RESULTS: org
-: org-capture
-
-* Agenda
-#+name: agenda
-#+begin_src elisp
+** Agenda
+#+name: org-agenda
+#+begin_src emacs-lisp
 (setq org-agenda-files '("~/agcloud/org/gtd.org"
 			 "~/agcloud/org/tickler.org"
 			 "~/agcloud/org/inbox.org"
 			 ))
 
 (setq org-agenda-custom-commands 
-      '(("o" "At the office" tags-todo "@office"
-	 ((org-agenda-overriding-header "Office")
+      '(
+	("w" "At work" tags-todo "@work"
+	 ((org-agenda-overriding-header "Work")
 	  (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)
-	  ))))
+	  ))
+	("h" "At home" tags-todo "@home"
+	 	 ((org-agenda-overriding-header "Home")
+	  (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)
+	  ))
+	))
 
 (defun my-org-agenda-skip-all-siblings-but-first ()
   "Skip all but the first non-done entry."
@@ -105,12 +172,9 @@
   (string= "TODO" (org-get-todo-state)))
 #+end_src
 
-#+RESULTS: agenda
-| ~/agcloud/org/gtd.org | ~/agcloud/org/tickler.org | ~/agcloud/org/inbox.org |
-
-* Capture Templates
-#+name: capture-temp
-#+begin_src elisp
+** Capture Templates
+#+name: org-capture-templates
+#+begin_src emacs-lisp
 (setq org-capture-templates
       '(
 	("t" "Todo" entry (file+headline "~/agcloud/org/inbox.org" "Inbox")
@@ -120,34 +184,36 @@
 	))
 #+end_src
 
-#+RESULTS: capture-temp
-| t | Todo  | entry | (file+headline ~/agcloud/org/inbox.org Inbox) | * TODO %? |
-| e | Entry | entry | (file+headline ~/agcloud/org/inbox.org Inbox) | * %?      |
-
-* Refile
-#+name: refile
-#+begin_src elisp
+** Refile target
+#+name: org-refile
+#+begin_src emacs-lisp
 (setq org-refile-targets '(("~/agcloud/org/gtd.org" :maxlevel . 3)
 			   ("~/agcloud/org/someday.org" :level . 1)
 			   ("~/agcloud/org/tickler.org" :maxlevel . 2)))
 #+end_src
 
-#+RESULTS: refile
-: ((~/agcloud/org/gtd.org :maxlevel . 3) (~/agcloud/org/someday.org :level . 1) (~/agcloud/org/tickler.org :maxlevel . 2))
 
-* Org Roam
+** Org Roam
 #+name: org-roam
-#+begin_src elisp
+#+begin_src emacs-lisp :noweb yes 
 (use-package org-roam
   :after org
   :init
   (setq org-roam-v2-ack t)
-  (setq org-roam-directory "~/agcloud/org-roam")
   
   :config
-  (setq org-roam-db-location "~/.emacs.d/org-roam.db")
   (require 'org-roam-protocol)
   (org-roam-setup)
+
+  :custom
+  (org-roam-db-location "~/.emacs.d/org-roam.db")
+  (org-roam-directory "~/agcloud/org-roam")
+  (org-roam-completion-everywhere t)
+  <<roam-capture-templates>>
+  
+  
+
+
   :bind
   ("C-c n i" . org-roam-node-insert)
   ("C-c n f" . org-roam-node-find)
@@ -160,154 +226,75 @@
 #+RESULTS: org-roam
 : org-roam-node-random
 
-* Helm
-#+name: helm
-#+begin_src elisp
-(use-package helm
-  :config
-  (helm-mode 1)
-  (global-unset-key (kbd "C-x c"))
-  :bind
-  (
-   	   ("M-x" . helm-M-x)
-	   ("C-x r b" . helm-filtered-bookmarks)
-	   ("C-x C-f" . helm-find-files)
-	   ("C-x b". helm-mini)
-	   ("M-y" . helm-show-kill-ring)
-	   ("C-c h o" . helm-occur)
-	   :map helm-command-map
-	   ("C-c h" . helm-command-prefix)
-	   ("<tab>" . helm-execute-persistent-action)
-	   ("C-i" . helm-execute-persistent-action)
-	   ("C-z" . helm-select-action))
-
-   )
-
-(use-package helm-bibtex
-  :ensure t
-  :demand t)
-  
+*** Roam capture templates
+#+name: roam-capture-templates
+#+begin_src emacs-lisp :noweb yes 
+(org-roam-capture-templates
+ '(
+   <<roam-default>>
+   <<roam-book>>
+   <<roam-website>>
+   <<roam-video>>
+   <<roam-project>>
+   ))
 #+end_src
 
-#+RESULTS: helm
-
-* Theme
-#+name: theme
-#+begin_src elisp
-(use-package zeno-theme)
+**** Link drawer
+#+name: link-drawer
+#+begin_src org
+\n* Links \n [[id:24586-3012-4104-b65b-bf2a2e526a18][Roam Index]]
 #+end_src
 
-* Dashboard
-#+name: dashboard
-#+begin_src elisp
-(use-package dashboard
-  :init
-  (setq dashboard-banner-logo-title "Emacs")
-  (setq dashboard-startup-banner 'logo)
-  (setq dashboard-center-content t)
-
-  :config
-  (dashboard-setup-startup-hook)
-  (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-  )
+**** default
+#+name: roam-default
+#+begin_src emacs-lisp :noweb yes 
+("d" "default" plain
+ "%?"
+ :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n <<link-drawer>>")
+ :unnarrowed t)
 #+end_src
 
-#+RESULTS: dashboard
-: t
-
-* Edit Server
-#+name: edit-server
-#+begin_src elisp
-(use-package edit-server
-  :if window-system
-  :init
-  (add-hook 'after-init-hook 'server-start t)
-  (add-hook 'after-init-hook 'edit-server-start t))
+**** book
+#+name: roam-book
+#+begin_src emacs-lisp :noweb yes 
+("b" "book" plain
+   "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"
+   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n <<link-drawer>>")
+   :unnarrowed t)
+#+end_src
+**** website
+#+name: roam-website
+#+begin_src emacs-lisp :noweb yes 
+("w" "website" plain
+   "\n* Source\n\nURL: %^{URL}\nTitle: ${title}\nAccessed-On: %<%Y%m%d>\n\n* Summary\n\n%?"
+   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n <<link-drawer>>")
+   :unnarrowed t)
+#+end_src
+**** video
+#+name: roam-video
+#+begin_src emacs-lisp :noweb yes 
+("v" "video" plain
+   "\n* Source\n\nURL: %^{URL}\nTitle: ${title}\nAccessed-On: %<%Y%m%d>\n\n* Summary\n\n%?"
+   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n <<link-drawer>>")
+   :unnarrowed t)
+#+end_src
+**** Project
+#+name: roam-project
+#+begin_src emacs-lisp :noweb yes 
+("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+ :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project \n\n <<link-drawer>>")
+ :unnarrowed t)
 #+end_src
 
-* Exec-path-from-shell
-#+name: exec-path-from-shell
-#+begin_src elisp
-(use-package exec-path-from-shell
-  :if (memq window-system '(mac ns))
-  :ensure t
-  :demand t
-  :config
-  (exec-path-from-shell-initialize))
-#+end_src
-
-#+RESULTS: exec-path-from-shell
-
-* PDF Tools
-#+name: pdf-tools
-#+begin_src elisp
-(use-package pdf-tools
-  :magic ("%PDF" . pdf-view-mode)
-  :config
-  (pdf-tools-install :no-query))
-#+end_src
-
-* Nov
-#+begin_src elisp
-(use-package nov
-  :magic ("%EPUB" . pdf-view-mode)
-  :config
-  (setq nov-text-width 90)
-  (defun my-nov-font-setup ()
-    (face-remap-add-relative 'variable-pitch :family "OpenDyslexic"
-			     :height 1.0))
-  (add-hook 'nov-mode-hook 'my-nov-font-setup)
-  )
-#+end_src
-
-* Disable Toolbar
-#+name: disable-toolbar
-#+begin_src elisp
-(menu-bar-mode -1)
-(tool-bar-mode -1) 
-(toggle-scroll-bar -1) 
-#+end_src
-
-* Org Noter
-#+name: org-noter
-#+begin_src elisp
-(use-package org-noter
-  :after (org pdf-tools nov)
-  :config
-  (setq org-noter-doc-property-in-notes t)
-  )
-#+end_src
-
-#+RESULTS: org-noter
-
-* Magit
-#+Name: magit
-#+begin_src elisp
-(use-package magit
-  :ensure t)
-#+end_src
-
-
-* Ob-ipython
-#+name: ob-ipython
-#+begin_src elisp
-(use-package ob-ipython
-  :after (:all org)
-)
-#+end_src
-
-#+RESULTS: ob-ipython
-
-
-* Org-ref
+** Org Ref
 #+name: org-ref
-#+begin_src elisp
+#+begin_src emacs-lisp
 (use-package org-ref
   :straight (org-ref :type git :host github :repo "jkitchin/org-ref")
-  :after (org helm-bibtex)
+  :after (org helm-bibtex hydra)
   :init
   (require 'bibtex)
-  (require 'hydra)
+  
 
   (setq reftex-default-bibliography "~/agcloud/org-roam/references.bib")
   (setq bibtex-autokey-year-length 4
@@ -330,28 +317,12 @@
 )
 #+end_src
 
-#+RESULTS: org-ref
-
-#+RESULTS:
-
-
-* Org-Flashcards
-#+name: org-fc
-#+begin_src elisp
-(use-package org-fc
-  :straight (org-fc
-   :type git :repo "https://git.sr.ht/~l3kn/org-fc"
-   :files (:defaults "awk" "demo.org")
-   :after (org)
-   :custom (org-fc-directories "~/agcloud/org-roam")))
-#+end_src
-
-#+RESULTS:
-
-* Org-Download
+** Org Download
 #+name: org-download
-#+begin_src elisp
+#+begin_src emacs-lisp
 (use-package org-download
+  :ensure-system-package xclip
+  :after org
   :config
   (setq org-download-image-dir "~/agcloud/org-roam/media/images")
   ;; Drag-and-drop to `dired`
@@ -359,32 +330,70 @@
   )
 #+end_src
 
-#+RESULTS: org-download
-: t
 
-#+RESULTS:
-: t
-
-* deft
-#+name: deft
+** Org-fc
+#+name: org-fc
 #+begin_src elisp
-(use-package deft
-  :bind ("<f8>" . deft)
-  :commands (deft)
-  :config (setq deft-directory "~/agcloud/org-roam"
-                deft-extensions '("org")
-		deft-recursive t
-		deft-use-filename-as-title t
-		
-		))
+(use-package org-fc
+   :ensure-system-package gawk
+   :after (org)
+   :custom (org-fc-directories "~/agcloud/org-roam")
+   :config
+   (require 'org-fc-hydra)
+   )
 #+end_src
 
-#+RESULTS: deft
-: deft
+#+RESULTS: org-fc
+: t
 
-* Elpy
+
+** Org Noter
+#+name: org-noter
+#+begin_src emacs-lisp
+(use-package org-noter
+  :after (org pdf-tools nov)
+  :config
+  (setq org-noter-doc-property-in-notes t)
+  )
+#+end_src
+
+* Python
+#+name: python
+#+begin_src emacs-lisp :noweb yes 
+(use-package python
+  :ensure-system-package python3
+  
+  :mode ("\\.py\\'" . python-mode)
+        ("\\.wsgi$" . python-mode)
+  :interpreter ("python" . python-mode)
+
+  :config
+  (setq python-indent-offset 4))
+
+<<elpy>>
+
+<<ob-ipython>>
+
+<<pyenv-mode>>
+
+<<python-jedi>>
+
+<<anaconda-mode>>
+#+end_src
+
+** Ob-ipython
+#+name: ob-ipython
+#+begin_src emacs-lisp
+(use-package ob-ipython
+  :after (:all org)
+  :ensure-system-package
+   (jupyter . "pip3 install jupyter")
+   )
+#+end_src
+
+** Elpy
 #+name: elpy
-#+begin_src elisp
+#+begin_src emacs-lisp
 (use-package elpy
   :commands elpy-enable
   :init (with-eval-after-load 'python (elpy-enable))
@@ -401,6 +410,11 @@
 
   :bind (:map elpy-mode-map ([remap elpy-goto-definition] .
                              ha/elpy-goto-definition)))
+#+end_src
+
+** pyenv-mode
+#+name: pyenv-mode
+#+begin_src emacs-lisp
 (use-package pyenv-mode
   :ensure t
   :after (exec-path-from-shell)
@@ -414,15 +428,11 @@
 
     (add-hook 'projectile-switch-project-hook 'projectile-pyenv-mode-set)
     (add-hook 'python-mode-hook 'pyenv-mode))
+#+end_src
 
-(use-package python
-  :mode ("\\.py\\'" . python-mode)
-        ("\\.wsgi$" . python-mode)
-  :interpreter ("python" . python-mode)
-
-  :config
-  (setq python-indent-offset 4))
-
+** Jedi
+#+name: python-jedi
+#+begin_src emacs-lisp
 (use-package jedi
   :ensure t
   :after (exec-path-from-shell)
@@ -434,7 +444,11 @@
     :init
     (add-hook 'python-mode-hook (lambda () (add-to-list 'company-backends 'company-jedi)))
     (setq company-jedi-python-bin "python")))
+#+end_src
 
+** anaconda-mode
+#+name: anaconda-mode
+#+begin_src emacs-lisp
 (use-package anaconda-mode
   :ensure t
   :after (exec-path-from-shell)
@@ -445,90 +459,59 @@
             :init (add-hook 'python-mode-hook 'anaconda-mode)
             (eval-after-load "company"
               '(add-to-list 'company-backends '(company-anaconda :with company-capf)))))
-
-
 #+end_src
-
-#+RESULTS: elpy
-
-* EAF
-#+name: eaf
-#+begin_src emacs-lisp
-(use-package eaf
-  :straight nil
-  :load-path "~/.emacs.d/site-lisp/emacs-application-framework"
-)
-#+end_src
-
-#+RESULTS: eaf
-
-#+RESULTS:
-: t
 
 * Yasnippet
 #+name: yasnippet
-#+begin_src elisp
+#+begin_src emacs-lisp
 (use-package yasnippet
   :config
   (yas-global-mode)
   (use-package yasnippet-snippets))
 #+end_src
 
-#+RESULTS: yasnippet
-: t
-
 * Flycheck
 #+name: flycheck
-#+begin_src elisp
+#+begin_src emacs-lisp
 (use-package flycheck)
 #+end_src
 
 * Flyspell
-#+name: flycheck
-#+begin_src elisp
+#+name: flyspell
+#+begin_src emacs-lisp
 (use-package flyspell
+  :ensure-system-package aspell
   :config
   (setq ispell-program-name "aspell" ; use aspell instead of ispell
 	ispell-extra-args '("--sug-mode=ultra")))
 #+end_src
 
-#+RESULTS: flycheck
-: t
-
 * BBDB
 #+name: BBDB
-#+begin_src elisp
+#+begin_src emacs-lisp
 (use-package bbdb
   :after (helm)
   :config
   (use-package helm-bbdb))
 #+end_src
 
-#+RESULTS: BBDB
-: t
-
 * Company
 #+name: company
-#+begin_src elisp
+#+begin_src emacs-lisp
 (use-package company
   :hook
   (after-init . global-company-mode))
 #+end_src
 
-#+RESULTS: company
-| global-company-mode | org-persist-load-all | #[0 \300 \207 [dashboard-insert-startupify-lists] 1] | debian-ispell-set-default-dictionary | debian-ispell-set-startup-menu | x-wm-set-size-hint | server-start | edit-server-start | magit-maybe-define-global-key-bindings | magit-auto-revert-mode--init-kludge | magit-startup-asserts | magit-version | table--make-cell-map |
-
 * Crux
 #+name: crux
-#+begin_src elisp
+#+begin_src emacs-lisp
 (use-package crux)
 #+end_src
 
-#+RESULTS: crux
-
-* Supersave
+* Super-save
 #+name: super-save
-#+begin_src elisp
+#+begin_src emacs-lisp
 (use-package super-save
   :config
   (setq auto-save-default nil)
@@ -536,116 +519,184 @@
   (setq super-save-remote-files nil)
   :hook
   (find-file super-save-hook-trigger))
-
 #+end_src
 
-#+RESULTS: supersave
-| super-save |
 
-* ob-async
-#+name: ob-async
-#+begin_src elisp
-(use-package ob-async
-  :after org
+* Hydra
+#+name: hydra
+#+begin_src emacs-lisp
+(use-package hydra)
+#+end_src
+
+* Helm
+#+name: helm
+#+begin_src emacs-lisp :noweb yes 
+(use-package helm
   :config
-  (require 'ob-async)
+  (helm-mode 1)
+  (global-unset-key (kbd "C-x c"))
+  :bind
+  (
+   	   ("M-x" . helm-M-x)
+	   ("C-x r b" . helm-filtered-bookmarks)
+	   ("C-x C-f" . helm-find-files)
+	   ("C-x b". helm-mini)
+	   ("M-y" . helm-show-kill-ring)
+	   ("C-c h o" . helm-occur)
+	   :map helm-command-map
+	   ("C-c h" . helm-command-prefix)
+	   ("<tab>" . helm-execute-persistent-action)
+	   ("C-i" . helm-execute-persistent-action)
+	   ("C-z" . helm-select-action))
+
+   )
+<<helm-bibtex>>
+#+end_src
+
+** helm-bibtex
+#+name: helm-bibtex
+#+begin_src emacs-lisp
+(use-package helm-bibtex
+  :ensure t
+  :demand t)
+#+end_src
+
+* Dashboard
+#+name: dashboard
+#+begin_src emacs-lisp
+(use-package dashboard
+  :init
+  (setq dashboard-banner-logo-title "Emacs")
+  (setq dashboard-startup-banner 'logo)
+  (setq dashboard-center-content t)
+
+  :config
+  (dashboard-setup-startup-hook)
+  (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+  )
+#+end_src
+* edit-sever
+#+name: edit-server
+#+begin_src emacs-lisp
+(use-package edit-server
+  :if window-system
+  :init
+  (add-hook 'after-init-hook 'server-start t)
+  (add-hook 'after-init-hook 'edit-server-start t))
+#+end_src
+* pdf-tools
+#+name: pdf-tools
+#+begin_src emacs-lisp
+(use-package pdf-tools
+  :magic ("%PDF" . pdf-view-mode)
+  :config
+  (pdf-tools-install :no-query))
+#+end_src
+
+#+RESULTS: pdf-tools
+: ((%EPUB . nov-mode) (%PDF . pdf-view-mode) (%EPUB . pdf-view-mode))
+
+* nov
+#+name: nov
+#+begin_src emacs-lisp
+(use-package nov
+  :magic ("%EPUB" . nov-mode)
+  :config
+  (setq nov-text-width 90)
+  (defun my-nov-font-setup ()
+    (face-remap-add-relative 'variable-pitch :family "OpenDyslexic"
+			     :height 1.0))
+  (add-hook 'nov-mode-hook 'my-nov-font-setup)
   )
 #+end_src
 
-#+RESULTS: ob-async
-: t
+#+RESULTS: nov
+: ((%EPUB . nov-mode) (%PDF . pdf-view-mode) (%EPUB . pdf-view-mode))
 
-* Org-music
-#+begin_src elisp
-(use-package emms
-  :config
-  (emms-all)
-  (emms-default-players))
+* Misc
 
-;; Org-Music Mode
-(use-package org-music
-  :straight (org-music :type git :host github :repo "debanjum/org-music")
-  :init (progn
-          (setq
-           org-music-file "~/agcloud/org-roam/Music.org"
-           org-music-media-directory "~/agcloud/Music/"
-           org-music-operating-system "linux")))
-    
-
+** theme
+#+name: theme
+#+begin_src emacs-lisp
+(use-package zeno-theme)
 #+end_src
 
-#+RESULTS:
+** disable fluff
+#+name: disable-fluff
+#+begin_src emacs-lisp
+(menu-bar-mode -1)
+(tool-bar-mode -1) 
+(toggle-scroll-bar -1)
+#+end_src
+
+** ease of use
+#+name: ease-of-use-stuff
+#+begin_src emacs-lisp
+(defalias 'yes-or-no-p 'y-or-n-p) ;;Ease of use
+#+end_src
 
 
 * Main
-#+begin_src elisp :noweb yes :tangle init.el
-<<install-straight-use-package>>
 
-<<org>>
-
-<<org-roam>>
-
-<<org-noter>>
+#+begin_src emacs-lisp :noweb yes :tangle init.el
+<<setup-straight>>
 
 <<helm>>
 
-<<theme>>
-
-<<dashboard>>
-
-<<exec-path-from-shell>>
-
-<<edit-server>>
-
-<<pdf-tools>>
-
-<<nov>>
-
-(defalias 'yes-or-no-p 'y-or-n-p) ;;Ease of use
-
-<<disable-toolbar>>
-
-<<deft>>
-
-<<org-fc>>
-
-<<org-download>>
-
-<<magit>>
-
-<<org-ref>>
-
-<<elpy>>
-
-<<ob-ipython>>
-
-<<ob-async>>
-
-<<yasnippet>>
-
-<<BBDB>>
-
-<<crux>>
+<<hydra>>
 
 <<company>>
 
-<<flycheck>>
+<<projectile>>
+
+<<edit-server>>
+
+<<org>>
+
+<<python>>
+
+<<nov>>
+
+<<pdf-tools>>
+
+<<yasnippet>>
+
+<<dashboard>>
+
+<<crux>>
+
+<<super-save>>
 
 <<flyspell>>
 
+<<flycheck>>
+
+<<bbdb>>
+
+<<theme>>
+
+<<disable-fluff>>
+
+<<ease-of-use-stuff>>
 #+end_src
 
 #+RESULTS:
 
-#+begin_src ipython :session :results output    
-print("Hello world")
+* Tests
+
+#+name: does-python-work
+#+begin_src ipython :session test :results raw replace output drawer 
+import random
+x = random.randint(0,10)
+y = random.randint(10,100)
+print(x + y)
 #+end_src
 
-#+RESULTS:
-: Hello world
+#+RESULTS: does-python-work
+:results:
+28
+:end:
 
 
-* References
-https://jeffkreeftmeijer.com/emacs-straight-use-package/
-https://github.com/jwiegley/use-package
-https://github.com/radian-software/straight.el
+
+
