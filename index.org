@@ -1,31 +1,17 @@
 #+Title: Emacs Configuration
 #+Author: Delta Alexander Sharp
 #+Email: nalisarc@gmail.com
-#+STARTUP: beamer
-* Export Setting                                                   :noexport:
-#+DESCRIPTION: 
-#+KEYWORDS: 
-#+LANGUAGE:  en
-#+OPTIONS:   H:2 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
-#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
-#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:https://orgmode.org/org-info.js
-#+EXPORT_SELECT_TAGS: export
-#+EXPORT_EXCLUDE_TAGS: noexport
-#+HTML_LINK_UP:
-#+HTML_LINK_HOME:
-
-#+beamer_theme: EastLansing
-
-#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
-
 
 * Bootstrap Straight and Use-package
+To start we need to inhibit package.el from starting in favor of straight. 
 #+name: early-init
 #+begin_src emacs-lisp :tangle early-init.el 
 ;; Disable package.el in favor of straight.el
 (setq package-enable-at-startup nil)
 #+end_src
+The above was added to our ~early-init.el~
 
+Then we need to set up straight and use-package.
 #+name: setup-straight
 #+begin_src emacs-lisp :noweb yes 
 ;; Install straight.el
@@ -78,6 +64,7 @@
 : t
 
 * Term
+Term provides a ansi compatible terminal to interfce with.
 #+name: term
 #+begin_src emacs-lisp
 (use-package term
@@ -100,6 +87,7 @@
   :bind-keymap
   ("C-c p" . projectile-command-map))
 #+end_src
+
 * Org
 #+name: org
 #+begin_src emacs-lisp :noweb yes 
@@ -120,7 +108,7 @@
   <<org-agenda>>
   <<org-capture-templates>>
   <<org-refile>>
-
+  
   )
 
 <<org-roam>>
@@ -200,26 +188,20 @@
   :after org
   :init
   (setq org-roam-v2-ack t)
-  
   :config
   (require 'org-roam-protocol)
   (org-roam-setup)
-
-  :custom
-  (org-roam-db-location "~/.emacs.d/org-roam.db")
-  (org-roam-directory "~/agcloud/org-roam")
-  (org-roam-completion-everywhere t)
-  <<roam-capture-templates>>
-  
-  
-
-
   :bind
   ("C-c n i" . org-roam-node-insert)
   ("C-c n f" . org-roam-node-find)
   ("C-c n l" . org-roam-buffer-toggle)
   ("C-c n d" . org-roam-dailies-capture-today)
   ("C-c n r" . org-roam-node-random)
+  :custom
+  (org-roam-db-location "~/.emacs.d/org-roam.db")
+  (org-roam-directory "~/agcloud/org-roam")
+  (org-roam-completion-everywhere t)
+  <<roam-capture-templates>>
   )
 #+end_src
 
@@ -298,24 +280,39 @@
 
   (setq reftex-default-bibliography "~/agcloud/org-roam/references.bib")
   (setq bibtex-autokey-year-length 4
-      bibtex-autokey-name-year-separator "-"
-      bibtex-autokey-year-title-separator "-"
-      bibtex-autokey-titleword-separator "-"
-      bibtex-autokey-titlewords 2
-      bibtex-autokey-titlewords-stretch 1
-      bibtex-autokey-titleword-length 5)
+	bibtex-autokey-name-year-separator "-"
+	bibtex-autokey-year-title-separator "-"
+	bibtex-autokey-titleword-separator "-"
+	bibtex-autokey-titlewords 2
+	bibtex-autokey-titlewords-stretch 1
+	bibtex-autokey-titleword-length 5)
+  :bind
+  ("C-c r" . org-ref-bibtex-hydra/body)
+  ("C-c ]" . org-ref-insert-link-hydra/body)
+  :config
+  (setq org-ref-bibliography-notes  "~/agcloud/org-roam/index.org"
+	org-ref-default-bibliography "~/agcloud/org-roam/references.bib"
+	org-ref-pdf-directory "~/agcloud/Books")
 
-:config
-(setq org-ref-bibliography-notes  "~/agcloud/org-roam/index.org"
-      org-ref-default-bibliography "~/agcloud/org-roam/references.bib"
-      org-ref-pdf-directory "~/agcloud/Books")
+  (require 'org-ref-helm)
+  (require 'org-ref-wos)
+  (require 'org-ref-scopus)
+  (require 'org-ref-isbn)
+  (require 'org-ref-pubmed)
+  (require 'org-ref-arxiv)
+  (require 'org-ref-sci-id)
+  (require 'x2bib)
+  (setq org-latex-pdf-process
+	'("pdflatex -interaction nonstopmode -output-directory %o %f"
+	  "bibtex %b"
+	  "pdflatex -interaction nonstopmode -output-directory %o %f"
+	  "pdflatex -interaction nonstopmode -output-directory %o %f"))
 
-(require 'org-ref-helm)
-
-:bind
-("C-c r" . org-ref-bibtex-hydra/body)
-)
+  )
 #+end_src
+
+#+RESULTS: org-ref
+: org-ref-insert-link-hydra/body
 
 ** Org Download
 #+name: org-download
@@ -325,6 +322,7 @@
   :after org
   :config
   (setq org-download-image-dir "~/agcloud/org-roam/media/images")
+  (setq org-download-heading-lvl nil)
   ;; Drag-and-drop to `dired`
   (add-hook 'dired-mode-hook 'org-download-enable)
   )
@@ -506,7 +504,20 @@
 * Crux
 #+name: crux
 #+begin_src emacs-lisp
-(use-package crux)
+(use-package crux
+  :bind
+  ("C-c o" . crux-open-with)
+  ("S-RET" . crux-smart-open-line)
+  ("C-c c" . crux-cleanup-buffer-or-region)
+  ("C-c f" . crux-recentf-find-file)
+  ("C-c F" . crux-recentf-find-directory)
+  ("C-c u" . crux-view-url)
+  ("C-c e" . crux-eval-and-replace)
+  ("C-x 4 t" . crux-transpose-windows)
+  ("C-c D" . crux-delete-file-and-buffer)
+  ("C-c t" . crux-visit-term-buffer)
+  ("C-c k" . crux-kill-other-buffers)
+  )
 #+end_src
 
 * Super-save
@@ -520,7 +531,6 @@
   :hook
   (find-file super-save-hook-trigger))
 #+end_src
-
 
 * Hydra
 #+name: hydra
@@ -632,9 +642,64 @@
 ** ease of use
 #+name: ease-of-use-stuff
 #+begin_src emacs-lisp
-(defalias 'yes-or-no-p 'y-or-n-p) ;;Ease of use
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; https://emacsredux.com/blog/2023/03/14/avoid-accidentally-minimizing-emacs/
+(global-set-key (kbd "C-z") #'undo)
+
+;; https://emacsredux.com/blog/2022/06/12/auto-create-missing-directories/
+(defun er-auto-create-missing-dirs ()
+  (let ((target-dir (file-name-directory buffer-file-name)))
+    (unless (file-exists-p target-dir)
+      (make-directory target-dir t))))
+
+(add-to-list 'find-file-not-found-functions #'er-auto-create-missing-dirs)
+
+(setq ring-bell-function 'ignore)
 #+end_src
 
+** Magit
+#+name: magit
+#+begin_src emacs-lisp
+(use-package magit
+  :ensure t
+  :ensure-system-package git)
+#+end_src
+
+#+RESULTS: magit
+
+** chatgpt-shell
+#+begin_src emacs-lisp
+(use-package chatgpt-shell
+  :straight (chatgpt-shell :type git
+			   :host github
+			   :repo "xenodium/chatgpt-shell"
+			   :files (:defaults)
+			   )
+  :init
+  (setq chatgpt-shell-openai-key "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"))
+#+end_src
+
+#+RESULTS:
+
+
+* Dictionary
+#+name: dictionary
+#+begin_src emacs-lisp
+(use-package dictionary
+  :ensure-system-package
+  ((dictd . dictd)
+   (dict . dict)
+   )
+  :config
+  (setq dictionary-server "localhost"))
+#+end_src
+
+#+RESULTS: dictionary
+: t
+
+#+RESULTS:
+: t
 
 * Main
 
@@ -644,6 +709,8 @@
 <<helm>>
 
 <<hydra>>
+
+<<term>>
 
 <<company>>
 
@@ -663,6 +730,8 @@
 
 <<dashboard>>
 
+<<magit>>
+
 <<crux>>
 
 <<super-save>>
@@ -674,6 +743,8 @@
 <<bbdb>>
 
 <<theme>>
+
+<<dictionary>>
 
 <<disable-fluff>>
 
@@ -698,5 +769,13 @@ print(x + y)
 :end:
 
 
+* Links
+https://github.com/bbatsov/crux
 
+https://github.com/jkitchin/org-ref
 
+https://depp.brause.cc/nov.el/
+
+https://www.leonrische.me/fc/index.html
+
+https://github.com/radian-software/straight.el
