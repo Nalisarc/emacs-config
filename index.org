@@ -106,8 +106,6 @@ Term provides a ansi compatible terminal to interfce with.
   (require 'ob-shell)
   (require 'ob-latex)
   <<org-agenda>>
-  <<org-capture-templates>>
-  <<org-refile>>
   
   )
 
@@ -126,11 +124,6 @@ Term provides a ansi compatible terminal to interfce with.
 ** Agenda
 #+name: org-agenda
 #+begin_src emacs-lisp
-(setq org-agenda-files '("~/agcloud/org/gtd.org"
-			 "~/agcloud/org/tickler.org"
-			 "~/agcloud/org/inbox.org"
-			 ))
-
 (setq org-agenda-custom-commands 
       '(
 	("w" "At work" tags-todo "@work"
@@ -160,27 +153,6 @@ Term provides a ansi compatible terminal to interfce with.
   (string= "TODO" (org-get-todo-state)))
 #+end_src
 
-** Capture Templates
-#+name: org-capture-templates
-#+begin_src emacs-lisp
-(setq org-capture-templates
-      '(
-	("t" "Todo" entry (file+headline "~/agcloud/org/inbox.org" "Inbox")
-	 "* TODO %?\n ")
-	("e" "Entry" entry(file+headline "~/agcloud/org/inbox.org" "Inbox")
-	 "* %?\n ")
-	))
-#+end_src
-
-** Refile target
-#+name: org-refile
-#+begin_src emacs-lisp
-(setq org-refile-targets '(("~/agcloud/org/gtd.org" :maxlevel . 3)
-			   ("~/agcloud/org/someday.org" :level . 1)
-			   ("~/agcloud/org/tickler.org" :maxlevel . 2)))
-#+end_src
-
-
 ** Org Roam
 #+name: org-roam
 #+begin_src emacs-lisp :noweb yes 
@@ -199,74 +171,36 @@ Term provides a ansi compatible terminal to interfce with.
   ("C-c n r" . org-roam-node-random)
   :custom
   (org-roam-db-location "~/.emacs.d/org-roam.db")
-  (org-roam-directory "~/agcloud/org-roam")
+  (org-roam-directory "~/agcloud/org")
+  (org-roam-file-exclude-regexp "\\.st[^/]*\\|logseq/.*$")
   (org-roam-completion-everywhere t)
-  <<roam-capture-templates>>
+  
+  ;; ensure org-roam is creating nodes similarly to Logseq
+  ;; bear in mind that it won't be exact mapping due to Logseq's built-in
+  ;;    :file/name-format :triple-lowbar
+  (setq org-roam-capture-templates '(("d" "default"
+				      plain
+				      "%?"
+				      :target (file+head "pages/${slug}.org" "#+title: ${title}\n")
+				      :unnarrowed t)))
+
+  ;; ensure your org-roam daily template follows the journal settings in Logseq
+  ;;    :journal/page-title-format "yyyy-MM-dd"
+  ;;    :journal/file-name-format "yyyy_MM_dd"
+  (setq org-roam-dailies-capture-templates '(("d" "default"
+					      entry
+					      "* %?"
+					      :target (file+head "%<%Y_%m_%d>.org" "#+title: %<%Y-%m-%d>\n")))))
+
+(use-package org-roam-logseq
+  :straight (org-roam-logseq :type git
+			     :host github
+			     :repo "nalisarc/org-roam-logseq")
   )
 #+end_src
 
 #+RESULTS: org-roam
-: org-roam-node-random
 
-*** Roam capture templates
-#+name: roam-capture-templates
-#+begin_src emacs-lisp :noweb yes 
-(org-roam-capture-templates
- '(
-   <<roam-default>>
-   <<roam-book>>
-   <<roam-website>>
-   <<roam-video>>
-   <<roam-project>>
-   ))
-#+end_src
-
-**** Link drawer
-#+name: link-drawer
-#+begin_src org
-\n* Links \n [[id:24586-3012-4104-b65b-bf2a2e526a18][Roam Index]]
-#+end_src
-
-**** default
-#+name: roam-default
-#+begin_src emacs-lisp :noweb yes 
-("d" "default" plain
- "%?"
- :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n <<link-drawer>>")
- :unnarrowed t)
-#+end_src
-
-**** book
-#+name: roam-book
-#+begin_src emacs-lisp :noweb yes 
-("b" "book" plain
-   "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"
-   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n <<link-drawer>>")
-   :unnarrowed t)
-#+end_src
-**** website
-#+name: roam-website
-#+begin_src emacs-lisp :noweb yes 
-("w" "website" plain
-   "\n* Source\n\nURL: %^{URL}\nTitle: ${title}\nAccessed-On: %<%Y%m%d>\n\n* Summary\n\n%?"
-   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n <<link-drawer>>")
-   :unnarrowed t)
-#+end_src
-**** video
-#+name: roam-video
-#+begin_src emacs-lisp :noweb yes 
-("v" "video" plain
-   "\n* Source\n\nURL: %^{URL}\nTitle: ${title}\nAccessed-On: %<%Y%m%d>\n\n* Summary\n\n%?"
-   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n <<link-drawer>>")
-   :unnarrowed t)
-#+end_src
-**** Project
-#+name: roam-project
-#+begin_src emacs-lisp :noweb yes 
-("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
- :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project \n\n <<link-drawer>>")
- :unnarrowed t)
-#+end_src
 
 ** Org Ref
 #+name: org-ref
@@ -278,7 +212,7 @@ Term provides a ansi compatible terminal to interfce with.
   (require 'bibtex)
   
 
-  (setq reftex-default-bibliography "~/agcloud/org-roam/references.bib")
+  (setq reftex-default-bibliography "~/agcloud/org/references.bib")
   (setq bibtex-autokey-year-length 4
 	bibtex-autokey-name-year-separator "-"
 	bibtex-autokey-year-title-separator "-"
@@ -290,8 +224,8 @@ Term provides a ansi compatible terminal to interfce with.
   ("C-c r" . org-ref-bibtex-hydra/body)
   ("C-c ]" . org-ref-insert-link-hydra/body)
   :config
-  (setq org-ref-bibliography-notes  "~/agcloud/org-roam/index.org"
-	org-ref-default-bibliography "~/agcloud/org-roam/references.bib"
+  (setq org-ref-bibliography-notes  "~/agcloud/org/index.org"
+	org-ref-default-bibliography "~/agcloud/org/references.bib"
 	org-ref-pdf-directory "~/agcloud/Books")
 
   (require 'org-ref-helm)
@@ -320,9 +254,10 @@ Term provides a ansi compatible terminal to interfce with.
 (use-package org-download
   :ensure-system-package xclip
   :after org
-  :config
-  (setq org-download-image-dir "~/agcloud/org-roam/media/images")
+  :custom
+  (setq org-download-image-dir "~/agcloud/org/media/images")
   (setq org-download-heading-lvl nil)
+  :config
   ;; Drag-and-drop to `dired`
   (add-hook 'dired-mode-hook 'org-download-enable)
   )
@@ -335,7 +270,7 @@ Term provides a ansi compatible terminal to interfce with.
 (use-package org-fc
    :ensure-system-package gawk
    :after (org)
-   :custom (org-fc-directories "~/agcloud/org-roam")
+   :custom (org-fc-directories "~/agcloud/org")
    :config
    (require 'org-fc-hydra)
    )
