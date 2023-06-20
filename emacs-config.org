@@ -1,0 +1,672 @@
+#+Title: Emacs configuration
+#+Author: Delta Alexander Sharp
+#+Email: nalisarc@gmail.com
+* Package Management
+I use a combination of straight and use-package to install and configure my
+other packages.
+#+name: bootstrap
+#+begin_src emacs-lisp
+  ;; Install straight.el
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+	(bootstrap-version 6))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+	  (url-retrieve-synchronously
+	   "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+	   'silent 'inhibit-cookies)
+	(goto-char (point-max))
+	(eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+  ;; ensure correct org
+  (straight-use-package 'org)
+
+  ;; Install use-package
+  (straight-use-package 'use-package)
+
+  ;; Configure use-package to use straight.el by default
+  (use-package straight
+    :custom
+    (straight-use-package-by-default t))
+
+  (use-package use-package-hydra)
+
+  (use-package use-package-ensure-system-package
+    :ensure t)
+
+  (use-package use-package-chords
+    :ensure t
+    :config (key-chord-mode 1))
+#+end_src
+** disable package.el
+#+name: disable-package
+#+begin_src emacs-lisp
+  ;; Disable package.el in favor of straight.el
+  (setq package-enable-at-startup nil)
+#+end_src
+* exec-path-from-shell
+This ensures emacs loads the path from our shell and can actually see
+our tools.
+#+name: exec-path
+#+begin_src emacs-lisp
+    (when (memq window-system '(mac ns x))
+    (use-package exec-path-from-shell
+      :ensure t
+      :config
+      (exec-path-from-shell-initialize)))
+#+end_src
+* Disable fluff
+I don't like the menu or tool bars.
+#+name: disable-fluff
+#+begin_src emacs-lisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1) 
+  (toggle-scroll-bar -1)
+#+end_src
+* Theme
+Loads a theme. You can find more here:
+https://emacsthemes.com/
+#+name: theme
+#+begin_src emacs-lisp
+  (use-package calmer-forest-theme
+    :config
+    (load-theme 'calmer-forest t)
+    )
+#+end_src
+
+* Ease of use
+#+name: ease-of-use
+#+begin_src emacs-lisp
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  ;; https://emacsredux.com/blog/2023/03/14/avoid-accidentally-minimizing-emacs/
+  (global-set-key (kbd "C-z") #'undo)
+
+  ;; https://emacsredux.com/blog/2022/06/12/auto-create-missing-directories/
+  (defun er-auto-create-missing-dirs ()
+    (let ((target-dir (file-name-directory buffer-file-name)))
+      (unless (file-exists-p target-dir)
+	(make-directory target-dir t))))
+
+  (add-to-list 'find-file-not-found-functions #'er-auto-create-missing-dirs)
+
+  (setq ring-bell-function 'ignore)
+#+end_src
+
+#+RESULTS:
+: ignore
+
+* Helm
+#+name: helm
+#+begin_src emacs-lisp :noweb yes 
+  (use-package helm
+    :config
+    (helm-mode 1)
+    (global-unset-key (kbd "C-x c"))
+    :bind
+    (
+	     ("M-x" . helm-M-x)
+	     ("C-x r b" . helm-filtered-bookmarks)
+	     ("C-x C-f" . helm-find-files)
+	     ("C-x b". helm-mini)
+	     ("M-y" . helm-show-kill-ring)
+	     ("C-c h o" . helm-occur)
+	     :map helm-command-map
+	     ("C-c h" . helm-command-prefix)
+	     ("<tab>" . helm-execute-persistent-action)
+	     ("C-i" . helm-execute-persistent-action)
+	     ("C-z" . helm-select-action)))
+
+<<helm-bibtex>>
+#+end_src
+
+#+name: helm-bibtex
+#+begin_src emacs-lisp
+  (use-package helm-bibtex
+  :ensure t
+  :demand t)
+#+end_src
+
+* BBDB
+#+name: BBDB
+#+begin_src emacs-lisp
+(use-package bbdb
+  :after (helm)
+  :config
+  (use-package helm-bbdb))
+#+end_src
+
+#+RESULTS:
+: t
+
+
+* Magit
+#+name: magit
+#+begin_src emacs-lisp
+  (use-package magit
+    :ensure t
+    :ensure-system-package git)
+#+end_src
+
+* Crux
+#+name: crux
+#+begin_src emacs-lisp
+  (use-package crux
+    :bind
+    ("C-c o" . crux-open-with)
+    ("S-RET" . crux-smart-open-line)
+    ("C-c c" . crux-cleanup-buffer-or-region)
+    ("C-c f" . crux-recentf-find-file)
+    ("C-c F" . crux-recentf-find-directory)
+    ("C-c u" . crux-view-url)
+    ("C-c e" . crux-eval-and-replace)
+    ("C-x 4 t" . crux-transpose-windows)
+    ("C-c D" . crux-delete-file-and-buffer)
+    ("C-c t" . crux-visit-term-buffer)
+    ("C-c k" . crux-kill-other-buffers)
+    )
+#+end_src
+
+* Dashboard
+#+name: dashboard
+#+begin_src emacs-lisp
+
+
+  (use-package dashboard
+    :init
+    (setq dashboard-banner-logo-title "Emacs")
+    (setq dashboard-startup-banner 'logo)
+    (setq dashboard-center-content t)
+
+    :config
+    (dashboard-setup-startup-hook)
+    (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+    )
+#+end_src
+
+* Projectile
+https://github.com/bbatsov/projectile
+
+#+name: projectile
+#+begin_src emacs-lisp
+(use-package projectile
+  :bind-keymap
+  ("C-c p" . projectile-command-map))
+#+end_src
+
+#+RESULTS: projectile
+| lambda | nil | (interactive) | (use-package-autoload-keymap 'projectile-command-map 'projectile nil) |
+
+* Flyspell
+#+name: flyspell
+#+begin_src emacs-lisp
+(use-package flyspell
+  :ensure-system-package aspell
+  :config
+  (setq ispell-program-name "aspell" ; use aspell instead of ispell
+	ispell-extra-args '("--sug-mode=ultra"))
+  
+  )
+#+end_src
+
+* Flycheck
+#+name: flycheck
+#+begin_src emacs-lisp
+(use-package flycheck)
+#+end_src
+
+* Yasnippet
+#+name: yasnippet
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :config
+  (yas-global-mode)
+  (use-package yasnippet-snippets))
+#+end_src
+
+* Company
+#+name: company
+#+begin_src emacs-lisp
+(use-package company
+  :hook
+  (after-init . global-company-mode))
+#+end_src
+
+* pdf tools
+#+name: pdf-tools
+#+begin_src emacs-lisp
+(use-package pdf-tools
+  :magic ("%PDF" . pdf-view-mode)
+  :config
+  (pdf-tools-install :no-query))
+#+end_src
+
+#+RESULTS: pdf-tools
+: ((%PDF . pdf-view-mode))
+
+* Nov
+#+name: nov
+#+begin_src emacs-lisp
+(use-package nov
+  :ensure-system-package fonts-opendyslexic
+  :magic ("%EPUB" . nov-mode)
+  :config
+  (setq nov-text-width 90)
+  (defun my-nov-font-setup ()
+    (face-remap-add-relative 'variable-pitch :family "OpenDyslexic"
+			     :height 1.0))
+  (add-hook 'nov-mode-hook 'my-nov-font-setup)
+  )
+#+end_src
+
+#+RESULTS:
+: ((%EPUB . nov-mode) (%PDF . pdf-view-mode))
+
+
+* Hydra
+#+name: hydra
+#+begin_src emacs-lisp
+(use-package hydra)
+#+end_src
+
+
+* TODO Org
+#+name: org
+#+begin_src emacs-lisp :noweb yes 
+  (use-package org
+    :ensure t
+
+    :bind (("C-c l" . org-store-link)
+	   ("C-c a" . org-agenda)
+	   ("C-c c" . org-capture))
+
+    :config
+    (require 'org-protocol)
+    (setq indent-tabs-mode nil)
+    (setq org-src-preserve-indentation t)
+    (require 'ob-org)
+    (require 'ob-shell)
+    (require 'ob-latex)
+    
+    <<org-agenda>> 
+
+    )
+
+<<org-roam>>
+
+<<org-ref>>
+
+
+
+<<org-download>>
+
+<<org-noter>>
+#+end_src
+
+** Agenda
+#+name: org-agenda
+#+begin_src emacs-lisp
+  (setq org-agenda-custom-commands 
+	'(
+	  ("w" "At work" tags-todo "@work"
+	   ((org-agenda-overriding-header "Work")
+	    (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)
+	    ))
+	  ("h" "At home" tags-todo "@home"
+		   ((org-agenda-overriding-header "Home")
+	    (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)
+	    ))
+	  ))
+
+  (defun my-org-agenda-skip-all-siblings-but-first ()
+    "Skip all but the first non-done entry."
+    (let (should-skip-entry)
+      (unless (org-current-is-todo)
+	(setq should-skip-entry t))
+      (save-excursion
+	(while (and (not should-skip-entry) (org-goto-sibling t))
+	  (when (org-current-is-todo)
+	    (setq should-skip-entry t))))
+      (when should-skip-entry
+	(or (outline-next-heading)
+	    (goto-char (point-max))))))
+
+  (defun org-current-is-todo ()
+    (string= "TODO" (org-get-todo-state)))
+#+end_src
+
+** Org-roam
+#+name: org-roam
+#+begin_src emacs-lisp
+(use-package org-roam
+  :after org
+  :init
+  (setq org-roam-v2-ack t)
+  :config
+  (require 'org-roam-protocol)
+  (org-roam-setup)
+  :bind
+  ("C-c n i" . org-roam-node-insert)
+  ("C-c n f" . org-roam-node-find)
+  ("C-c n l" . org-roam-buffer-toggle)
+  ("C-c n d" . org-roam-dailies-capture-today)
+  ("C-c n r" . org-roam-node-random)
+  :custom
+  (org-roam-db-location "~/.emacs.d/org-roam.db")
+  (org-roam-directory "~/agcloud/org")
+  (org-roam-file-exclude-regexp "\\.st[^/]*\\|logseq/.*$")
+  (org-roam-completion-everywhere t)
+  
+  ;; ensure org-roam is creating nodes similarly to Logseq
+  ;; bear in mind that it won't be exact mapping due to Logseq's built-in
+  ;;    :file/name-format :triple-lowbar
+  (setq org-roam-capture-templates '(("d" "default"
+				      plain
+				      "%?"
+				      :target (file+head "pages/${slug}.org" "#+title: ${title}\n")
+				      :unnarrowed t)))
+
+  ;; ensure your org-roam daily template follows the journal settings in Logseq
+  ;;    :journal/page-title-format "yyyy-MM-dd"
+  ;;    :journal/file-name-format "yyyy_MM_dd"
+  (setq org-roam-dailies-capture-templates '(("d" "default"
+					      entry
+					      "* %?"
+					      :target (file+head "%<%Y_%m_%d>.org" "#+title: %<%Y-%m-%d>\n")))))
+#+end_src
+
+#+RESULTS: org-roam
+: org-roam-node-random
+
+** org-ref
+#+name: org-ref
+#+begin_src emacs-lisp
+(use-package org-ref
+  :straight (org-ref :type git :host github :repo "jkitchin/org-ref")
+  :after (org helm-bibtex hydra)
+  :init
+  (require 'bibtex)
+  
+
+  (setq reftex-default-bibliography "~/agcloud/org/references.bib")
+  (setq bibtex-autokey-year-length 4
+	bibtex-autokey-name-year-separator "-"
+	bibtex-autokey-year-title-separator "-"
+	bibtex-autokey-titleword-separator "-"
+	bibtex-autokey-titlewords 2
+	bibtex-autokey-titlewords-stretch 1
+	bibtex-autokey-titleword-length 5)
+  :bind
+  ("C-c r" . org-ref-bibtex-hydra/body)
+  ("C-c ]" . org-ref-insert-link-hydra/body)
+  :config
+  (setq org-ref-bibliography-notes  "~/agcloud/org/index.org"
+	org-ref-default-bibliography "~/agcloud/org/references.bib"
+	org-ref-pdf-directory "~/agcloud/Books")
+
+  (require 'org-ref-helm)
+  (require 'org-ref-wos)
+  (require 'org-ref-scopus)
+  (require 'org-ref-isbn)
+  (require 'org-ref-pubmed)
+  (require 'org-ref-arxiv)
+  (require 'org-ref-sci-id)
+  (require 'x2bib)
+  (setq org-latex-pdf-process
+	'("pdflatex -interaction nonstopmode -output-directory %o %f"
+	  "bibtex %b"
+	  "pdflatex -interaction nonstopmode -output-directory %o %f"
+	  "pdflatex -interaction nonstopmode -output-directory %o %f"))
+
+  )
+#+end_src
+
+#+RESULTS:
+: org-ref-insert-link-hydra/body
+
+*** TODO fix insert link binding
+Right now it still does default behavior (messes with agenda files.
+But I only care about the ones defined in the agenda section.
+
+** Org Download
+#+name: org-download
+#+begin_src emacs-lisp
+(use-package org-download
+  :ensure-system-package xclip
+  :after org
+  :custom
+  (setq org-download-image-dir "~/agcloud/org/media/images")
+  (setq org-download-heading-lvl nil)
+  :config
+  ;; Drag-and-drop to `dired`
+  (add-hook 'dired-mode-hook 'org-download-enable)
+  )
+#+end_src
+
+#+RESULTS:
+: t
+
+** org noter
+#+name: org-noter
+#+begin_src emacs-lisp
+(use-package org-noter
+  :after (org pdf-tools nov)
+  :config
+  (setq org-noter-doc-property-in-notes t)
+  )
+#+end_src
+
+#+RESULTS:
+
+
+** TODO ob-async
+This would be useful but seems to be a bit borked atm
+#+begin_src emacs-lisp
+(use-package ob-async
+  :init
+  (setq ob-async-no-async-languages-alist '("ipython"))
+  :config
+  (require 'ob-async))
+#+end_src
+
+#+RESULTS:
+: t
+
+#+name: test-async
+#+begin_src sh :async 
+sleep 3s && echo 'Done!'
+#+end_src
+
+#+RESULTS: test-async
+: cf1241c907a0ab908bb0a04ae095d838
+
+** TODO org-fc
+
+** TODO org-logseq
+
+* Python
+
+#+name: python
+#+begin_src emacs-lisp :noweb yes 
+(use-package python
+  :ensure-system-package python3
+  
+  :mode ("\\.py\\'" . python-mode)
+        ("\\.wsgi$" . python-mode)
+  :interpreter ("python" . python-mode)
+
+  :config
+  (setq python-indent-offset 4))
+
+<<elpy>>
+
+<<ob-ipython>>
+
+<<pyenv-mode>>
+
+<<python-jedi>>
+
+<<anaconda-mode>>
+#+end_src
+
+#+RESULTS: python
+: t
+
+** elpy
+#+name: elpy
+#+begin_src emacs-lisp
+(use-package elpy
+  :commands elpy-enable
+  :init (with-eval-after-load 'python (elpy-enable))
+
+  :config
+  (delete 'elpy-module-highlight-indentation elpy-modules)
+  (delete 'elpy-module-flymake elpy-modules)
+
+  (defun ha/elpy-goto-definition ()
+    (interactive)
+    (condition-case err
+        (elpy-goto-definition)
+      ('error (xref-find-definitions (symbol-name (symbol-at-point))))))
+
+  :bind (:map elpy-mode-map ([remap elpy-goto-definition] .
+                             ha/elpy-goto-definition)))
+#+end_src
+
+** pyenv-mode
+#+name: pyenv-mode
+#+begin_src emacs-lisp
+(use-package pyenv-mode
+  :ensure t
+  :after (exec-path-from-shell)
+  :config
+    (defun projectile-pyenv-mode-set ()
+      "Set pyenv version matching project name."
+      (let ((project (projectile-project-name)))
+        (if (member project (pyenv-mode-versions))
+            (pyenv-mode-set project)
+          (pyenv-mode-unset))))
+
+    (add-hook 'projectile-switch-project-hook 'projectile-pyenv-mode-set)
+    (add-hook 'python-mode-hook 'pyenv-mode))
+#+end_src
+
+
+** ob-ipython
+#+name: ob-ipython
+#+begin_src emacs-lisp
+(use-package ob-ipython
+  :straight (ob-ipython :type git :host github :repo "Nalisarc/ob-ipython")
+  :after (:all org)
+  :ensure-system-package
+   (jupyter . "pip3 install jupyter")
+
+  :config
+  ; kill extraneous content in ipython returns between top-level JSON objects
+  (advice-add 'ob-ipython--collect-json :before
+            (lambda (&rest args)
+              (let ((start (point)))
+                (set-mark (point))
+                (while (re-search-forward "{" nil t)
+                  (backward-char)
+                  (kill-region (region-beginning) (region-end))
+                  (re-search-forward "}\n" nil t)
+                  (set-mark (point)))
+                (end-of-buffer)
+                (kill-region (region-beginning) (region-end))
+                (goto-char start))))
+   )
+#+end_src
+
+#+RESULTS: ob-ipython
+: t
+
+*** test
+readtable error 47 will be the death of me.
+
+By adding the above advice from https://github.com/gregsexton/ob-ipython/issues/135#issuecomment-478748897,
+and ensuring that python has installed jupyter and that the elpy RPC exist
+seems to make things work.
+
+This seems to be repeatably usable though!!
+
+
+
+#+begin_src ipython :session testy :results output 
+import random
+x = random.randint(0,10)
+y = random.randint(10,100)
+print(x + y)
+#+end_src
+
+#+RESULTS:
+: 72
+
+
+** jedi
+#+name: python-jedi
+#+begin_src emacs-lisp
+(use-package jedi
+  :ensure t
+  :after (exec-path-from-shell)
+  :init
+  (add-to-list 'company-backends 'company-jedi)
+  :config
+  (use-package company-jedi
+    :ensure t
+    :init
+    (add-hook 'python-mode-hook (lambda () (add-to-list 'company-backends 'company-jedi)))
+    (setq company-jedi-python-bin "python")))
+#+end_src
+
+** anaconda
+#+name: anaconda-mode
+#+begin_src emacs-lisp
+(use-package anaconda-mode
+  :ensure t
+  :after (exec-path-from-shell)
+  :init (add-hook 'python-mode-hook 'anaconda-mode)
+        (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+  :config (use-package company-anaconda
+            :ensure t
+            :init (add-hook 'python-mode-hook 'anaconda-mode)
+            (eval-after-load "company"
+              '(add-to-list 'company-backends '(company-anaconda :with company-capf)))))
+#+end_src
+
+
+* Output
+
+#+name: init
+#+begin_src emacs-lisp :tangle init.el :noweb yes
+  <<bootstrap>>
+  <<exec-path>>
+  <<disable-fluff>>
+  <<ease-of-use>>
+  <<theme>>
+  <<magit>>
+  <<helm>>
+  <<BBDB>>
+  <<crux>>
+  <<dashboard>>
+  <<org>>
+  <<projectile>>
+  <<flyspell>>
+  <<flycheck>>
+  <<yasnippet>>
+  <<company>>
+  <<pdf-tools>>
+  <<nov>>
+  <<hydra>>
+  <<python>>
+  #+end_src
+
+#+RESULTS: init
+
+#+name: early-init
+#+begin_src emacs-lisp :tangle early-init.el :noweb yes
+  <<disable-package>>
+#+end_src
+
+
